@@ -3,7 +3,7 @@ class Member_model extends Base_Model {
 
 	var $page_size = 10;
 	public function __construct() {
-		$this->table_name = 'announce';
+		$this->table_name = 'user';
 		parent::__construct();
 	}
 	

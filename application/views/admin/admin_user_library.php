@@ -9,18 +9,7 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 <!-- Content Header (Page header) -->
-<section class="content-header">
-	<h1>
-		用户列表
-		<small>用户详细信息</small>
-	</h1>
-	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>
-		<li><a href="#">用户</a></li>
-		<li class="active">用户详细信息</li>
-	</ol>
-</section>
-
+	<?echo $pageheader;?>
 <!-- Main content -->
 <section class="content">
 <div class="row">
@@ -36,8 +25,8 @@
 				       data-toggle="table"
 				       data-url="<?php echo base_url('/welcome/userjson');?>"
 				       data-pagination="true"
-				       data-page-size="10"
-				       data-page-list="[10, 25, 50, 100, ALL]"
+				       data-page-size="20"
+				       data-page-list="[25, 50, 100, ALL]"
 				       data-search="true"
 				       data-detail-view="true"
 				       data-detail-formatter="detailFormatter"
@@ -72,7 +61,7 @@
 </section><!-- /.content -->
 </div><!-- /.content-wrapper -->
 <!-- footer -->
-<?require_once(dirname(__FILE__)."/"."../footer.php");?>
+<? require_once(dirname(__FILE__) . "/" . "../footer.php");?>
 
 <!-- ./wrapper -->
 
