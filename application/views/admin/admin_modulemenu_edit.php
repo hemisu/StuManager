@@ -2,34 +2,47 @@
 /**
  * Created by PhpStorm.
  * User: hekunyu
- * Date: 15/11/25
+ * Date: 15/11/27
  * Time: 下午9:24
  */
 ?>
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 <!-- Content Header (Page header) -->
-<section class="content-header">
-	<h1>
-		系统公告
-		<small>编辑页面</small>
-	</h1>
-	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
-		<li>管理</li>
-		<li><a href="<?echo base_url('admin/announce');?>">内容管理</a></li>
-		<li><a href="<?echo base_url('admin/announce');?>">系统公告</a></li>
-		<li class="active">系统公告编辑</li>
-	</ol>
-</section>
-
+	<?echo $pageheader;?>
 <!-- Main content -->
 <section class="content">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="box box-info">
 				<div class="box-header">
-					<h3 class="box-title">公告内容<small>使用Bootstrap WYSIHTML5 编辑器</small></h3>
+					<h3 class="box-title">上级菜单信息<small>不可编辑</small></h3>
+					<!-- tools box -->
+					<div class="pull-right box-tools">
+					</div><!-- /. tools -->
+				</div><!-- /.box-header -->
+
+				<div class="box-body pad">
+						<div class="form-group">
+							<label>上级菜单名称</label>
+							<span class="form-control"><?
+								$menu_id = $father_menu_info['parent_id'];
+								foreach($menu_info as $val){
+									if($menu_id==$val['menu_id']){
+										$m=$val;
+									}
+								}
+								if(isset($m)) {
+									echo '<i class="fa '.$m['css_icon'].'"></i>&nbsp;'.$m['menu_name'];
+								}
+								?></span>
+						</div>
+				</div><!-- /.box-body-->
+			</div>
+
+			<div class="box box-info">
+				<div class="box-header">
+					<h3 class="box-title">菜单内容<small>不了解请勿随意编辑</small></h3>
 					<!-- tools box -->
 					<div class="pull-right box-tools">
 						<button class="btn btn-info btn-sm" data-widget="collapse" data-toggle="tooltip" title="Collapse"><i class="fa fa-minus"></i></button>
@@ -44,12 +57,73 @@
 						'hash' => $this->security->get_csrf_hash()
 					);
 					?>
-					<form id="announceForm" action="<?echo base_url("admin/announce_modulemenu_add_post");?>" method="post">
-						<div class="form-group">
-							<label>上级菜单</label>
-							<input type="text" class="form-control" name="title"  value="<?echo $father_menu_info['menu_name'];?>" readonly>
+					<form id="moduleForm" action="<?echo base_url("admin/modulemenu_edit_post").'/menu_id/'.$father_menu_info['menu_id'];?>" method="post">
+						<?
+						?>
+						<div class="row">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>菜单名</label>
+									<input type="text" class="form-control" name="menu_name"  value="<?echo $father_menu_info['menu_name'];?>" >
+								</div>
+								<div class="form-group">
+									<label>图标CSS</label>
+									<div class="input-group">
+										<input type="text" class="form-control" name="css_icon" value="<?echo $father_menu_info['css_icon'];?>">
+										<span class="input-group-addon"><?echo '&nbsp;<i class="fa '.$father_menu_info['css_icon'].'"></i>';?></span>
+									</div>
+									<a href="http://fontawesome.dashgame.com/" target="_blank">请输入fontawesome 图标CSS</a>
+								</div>
+								<div class="form-group">
+									<div class="row">
+										<div class="col-md-6">
+											<label>是否是父级元素</label>
+												<label class="control-label"><input type="radio" name="is_parent" value="1" <?echo $father_menu_info['is_parent']?'checked="checked"':'';?>>
+													是</label>&nbsp;&nbsp;
+												<label class="control-label"><input type="radio" name="is_parent" value="0" <?echo $father_menu_info['is_parent']?'':'checked="checked"';?>>
+													否</label>
+										</div>
+										<div class="col-md-6">
+											<label>是否显示</label>
+											<label class="control-label"><input type="radio" name="is_display" value="1" <?echo $father_menu_info['is_display']?'checked="checked"':'';?>>
+												是</label>&nbsp;&nbsp;
+											<label class="control-label"><input type="radio" name="is_display" value="0" <?echo $father_menu_info['is_display']?'':'checked="checked"';?>>
+												否</label>
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<label>单独显示</label>
+											<label class="control-label"><input type="radio" name="show_alone" value="1" <?echo $father_menu_info['show_alone']?'checked="checked"':'';?>>
+												是</label>&nbsp;&nbsp;
+											<label class="control-label"><input type="radio" name="show_alone" value="0" <?echo $father_menu_info['show_alone']?'':'checked="checked"';?>>
+												否</label>
+										</div>
+										<div class="col-md-6">
+											<label>分隔栏</label>
+											<label class="control-label"><input type="radio" name="is_header" value="1" <?echo $father_menu_info['is_header']?'checked="checked"':'';?>>
+												是</label>&nbsp;&nbsp;
+											<label class="control-label"><input type="radio" name="is_header" value="0" <?echo $father_menu_info['is_header']?'':'checked="checked"';?>>
+												否</label>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label>子级元素</label>
+									<input type="text" class="form-control" name="arr_childid"  value="<?echo $father_menu_info['arr_childid'];?>" >
+								</div>
+								<div class="form-group">
+									<label>控制器</label>
+									<input type="text" class="form-control" name="controller"  value="<?echo $father_menu_info['controller'];?>" >
+								</div>
+								<div class="form-group">
+									<label>方法</label>
+									<input type="text" class="form-control" name="method"  value="<?echo $father_menu_info['method'];?>" >
+								</div>
+							</div>
 						</div>
-
 						<input type="hidden" name="<?=$csrf['name'];?>" value="<?=$csrf['hash'];?>" />
 				</div><!-- /.box-body-->
 				<div class="box-footer">
@@ -97,6 +171,8 @@
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-validator/js/bootstrapValidator.min.js"></script>
 <!-- sco.message -->
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
+<!-- control -->
+<script src="<?php echo base_url();?>public/js/<?php echo $controller_name.'_'.$method_name;?>.js"></script>
 
 </body>
 </html>

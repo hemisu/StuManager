@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class User extends CI_Controller {
+class User extends Login_Controller {
 
 	/**
 	 * Index Page for this controller.
@@ -21,26 +21,16 @@ class User extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->model(array('Times_model'));
-		$this->load->helper('url');
 	}
 	public function multilist(){
-		$data['controller_name']= trim($this->router->class);
-		$data['method_name']= trim($this->router->method);
-		$this->load->view('head');
-		$this->load->view('siderbar',$data);
-		$this->load->view('public/table',$data);
+
 	}
 	public function profile(){
-		$data['controller_name']= trim($this->router->class);
-		$data['method_name']= trim($this->router->method);
-		$this->load->view('head');
-		$this->load->view('siderbar',$data);
-		$this->load->view('public/profile',$data);
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('public/profile',$this->page_data);
 	}
-	public function userjson(){
-		$userinfo = $this->Times_model->select('','`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`');
-		echo json_encode($userinfo);
-
+	public function l(){
+//		$this->check_member();
 	}
 }

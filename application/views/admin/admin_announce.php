@@ -9,19 +9,7 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 <!-- Content Header (Page header) -->
-<section class="content-header">
-	<h1>
-		系统公告
-		<small>列表</small>
-	</h1>
-	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
-		<li>管理</li>
-		<li>内容管理</li>
-		<li><a href="<?echo base_url('admin/announce');?>">系统公告</a></li>
-	</ol>
-</section>
-
+	<?echo $pageheader;?>
 <!-- Main content -->
 <section class="content">
 	<div class="row">
@@ -88,30 +76,5 @@
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
 <!-- Bootstrap WYSIHTML5 -->
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
-<?//跨站请求伪造
-$csrf = array(
-	'name' => $this->security->get_csrf_token_name(),
-	'hash' => $this->security->get_csrf_hash()
-);
-?>
-<script>
-	$(".bg-red").each(function(){
-		$(this).click(function(){
-			id=$(this).data('deleteid');
-			t=$(this).parent().parent();
-			$.ajax({
-				type: "post",
-				url: "<?=base_url('admin/announce_delete')?>",
-				data: {announce_id:id,<?=$csrf['name']?>:'<?=$csrf['hash']?>'},
-				dataType: "json",
-				success: function(data){
-					console.log(data);
-					$.scojs_message('删除成功', $.scojs_message.TYPE_OK);
-					t.remove();
-				}
-			});
-		})
-	})
-</script>
 </body>
 </html>

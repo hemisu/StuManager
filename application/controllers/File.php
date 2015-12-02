@@ -1,19 +1,17 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class File extends CI_Controller {
+class File extends Login_Controller{
 
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->model(array('Times_model'));
+		$this->load->model(array('User_model'));
 		$this->load->helper('url');
 	}
 	public function index(){
-		$data['controller_name']= trim($this->router->class);
-		$data['method_name']= trim($this->router->method);
-		$this->load->view('head');
-		$this->load->view('siderbar',$data);
-		$this->load->view('public/file_manager',$data);
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('public/file_manager',$this->page_data);
 	}
 }

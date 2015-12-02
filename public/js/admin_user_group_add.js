@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	$('#moduleForm').bootstrapValidator({
+	$('#groupForm').bootstrapValidator({
 		framework: 'bootstrap',
 		icon: {
 			valid: 'glyphicon glyphicon-ok',
@@ -7,7 +7,14 @@ $(document).ready(function(){
 			validating: 'glyphicon glyphicon-refresh'
 		},
 		fields: {
-			menu_name: {
+			group_id: {
+				validators: {
+					notEmpty: {
+						message: '标题不能为空'
+					}
+				}
+			},
+			group_name: {
 				validators: {
 					notEmpty: {
 						message: '标题不能为空'
@@ -29,7 +36,7 @@ $(document).ready(function(){
 		$.post($form.attr('action'), $form.serialize(), function (result) {
 			if (result.response === 'error') {
 				$.scojs_message('提交失败', $.scojs_message.TYPE_ERROR);
-				$('#bindingForm').data('formValidation').resetForm();
+				$('#groupForm').data('formValidation').resetForm();
 			} else {
 				console.log(result);
 				$.scojs_message('提交成功', $.scojs_message.TYPE_OK);

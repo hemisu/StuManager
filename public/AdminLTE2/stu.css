@@ -1,0 +1,232 @@
+hr {
+		margin-top: 10px;
+		margin-bottom: 10px;
+		border: 0;
+		border-top: 1px solid #eee;
+	}
+	/**班级圈**/
+	.social-feed-box {
+		border: 1px solid #e7eaec;
+		background: #fff;
+		margin-bottom: 15px;
+	}
+	.social-action {
+		margin: 15px;
+	}
+	.social-avatar .media-body a {
+		font-size: 14px;
+		display: block;
+	}
+	.btn-white {
+		color: inherit;
+		background: #fff;
+		border: 1px solid #e7eaec;
+	}
+	.btn-white.active,.btn-white:active,.btn-white:focus,.btn-white:hover {
+		color:inherit;
+		border:1px solid #d2d2d2
+	}
+	.btn-white.active,.btn-white:active {
+		box-shadow:0 2px 5px rgba(0,0,0,.15)inset
+	}
+	.m-t-xs {
+		margin-top: 5px;
+	}
+	.m-b-sm {
+		margin-bottom: 10px;
+	}
+	.m-t-sm {
+		margin-top: 10px;
+	}
+	.media-body {
+		display: block;
+		width: auto;
+	}
+	.text-muted {
+		color: #777;
+	}
+	.social-body {
+		padding: 15px;
+	}
+	.social-avatar {
+		padding: 15px 15px 0;
+	}
+	.social-avatar img {
+		height: 40px;
+		width: 40px;
+		margin-right: 10px;
+	}
+	.social-footer .social-comment img {
+		width: 32px;
+		margin-right: 10px;
+	}
+	.social-footer {
+		border-top: 1px solid #e7eaec;
+		padding: 10px 15px;
+		background: #f9f9f9;
+	}
+	.social-comment:first-child {
+		margin-top: 0;
+	}
+	.social-comment {
+		margin-top: 15px;
+	}
+	/**file_manager**/
+
+	.ibox {
+		clear: both;
+		margin-bottom: 25px;
+		margin-top: 0;
+		padding: 0;
+	}
+	.ibox-content {
+		background-color: #fff;
+		color: inherit;
+		padding: 15px 20px 20px;
+		border-color: #e7eaec;
+		-webkit-border-image: none;
+		-o-border-image: none;
+		border-image: none;
+		border-style: solid solid none;
+		border-width: 1px 0;
+		clear: both;
+	}
+	.ibox-title {
+		-moz-border-bottom-colors: none;
+		-moz-border-left-colors: none;
+		-moz-border-right-colors: none;
+		-moz-border-top-colors: none;
+		background-color: #fff;
+		border-color: #e7eaec;
+		-webkit-border-image: none;
+		-o-border-image: none;
+		border-image: none;
+		border-style: solid solid none;
+		border-width: 4px 0 0;
+		color: inherit;
+		margin-bottom: 0;
+		padding: 14px 15px 7px;
+		min-height: 48px;
+	}
+	.ibox-title h5 {
+		display: inline-block;
+		font-size: 14px;
+		margin: 0 0 7px;
+		padding: 0;
+		text-overflow: ellipsis;
+		float: left;
+	}
+
+	.ibox-tools {
+		display: inline-block;
+		float: right;
+		margin-top: 0;
+		position: relative;
+		padding: 0;
+	}
+	.project-list table tr td {
+		border-top: none;
+		border-bottom: 1px solid #e7eaec;
+		padding: 15px 10px;
+		vertical-align: middle;
+	}
+	.file-manager {
+		list-style: none outside none;
+		margin: 0;
+		padding: 0;
+	}
+	.file-control.active {
+		text-decoration: underline;
+	}
+	.file-control {
+		color: inherit;
+		font-size: 11px;
+		margin-right: 10px;
+	}
+	.file-manager .hr-line-dashed {
+		margin: 15px 0;
+	}
+	.folder-list li {
+		border-bottom: 1px solid #e7eaec;
+		display: block;
+	}
+	.folder-list li a {
+		color: #666;
+		display: block;
+		padding: 5px 0;
+	}
+	.folder-list li i {
+		margin-right: 8px;
+		color: #3d4d5d;
+	}
+	.tag-list li {
+		float: left;
+	}
+	.tag-list li a {
+		font-size: 10px;
+		background-color: #f3f3f4;
+		padding: 5px 12px;
+		color: inherit;
+		border-radius: 2px;
+		border: 1px solid #e7eaec;
+		margin-right: 5px;
+		margin-top: 5px;
+		display: block;
+	}
+	ul.tag-list li {
+		list-style: none;
+	}
+	.file-box {
+		float: left;
+		width: 220px;
+	}
+	.file {
+		border: 1px solid #e7eaec;
+		padding: 0;
+		background-color: #fff;
+		position: relative;
+		margin-bottom: 20px;
+		margin-right: 20px;
+	}
+	.corner {
+		position: absolute;
+		display: inline-block;
+		width: 0;
+		height: 0;
+		line-height: 0;
+		border: .6em solid transparent;
+		border-right: .6em solid #f1f1f1;
+		border-bottom: .6em solid #f1f1f1;
+		right: 0;
+		bottom: 0;
+	}
+	.file .icon {
+		padding: 15px 10px;
+		text-align: center;
+	}
+	.file .icon, .file .image {
+		height: 100px;
+		overflow: hidden;
+	}
+	.file .file-name {
+		padding: 10px;
+		background-color: #f8f8f8;
+		border-top: 1px solid #e7eaec;
+	}
+	.file .icon i {
+		font-size: 70px;
+		color: #dadada;
+	}
+	.project-people img {
+		width: 32px;
+		height: 32px;
+	}
+	.img-circle {
+		border-radius: 50%;
+	}
+	.img-circle {
+		border-radius: 50%;
+	}
+	img {
+		vertical-align: middle;
+	}

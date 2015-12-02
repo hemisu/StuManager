@@ -9,18 +9,7 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 <!-- Content Header (Page header) -->
-<section class="content-header">
-	<h1>
-		待办事项
-		<small>待办事项列表</small>
-	</h1>
-	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
-		<li>待办事项</li>
-		<li class="active">待办事项列表</li>
-	</ol>
-</section>
-
+	<?echo $pageheader;?>
 <!-- Main content -->
 <section class="content">
 	<div class="row">

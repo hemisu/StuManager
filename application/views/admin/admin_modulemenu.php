@@ -9,44 +9,33 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 <!-- Content Header (Page header) -->
-<section class="content-header">
-	<h1>
-		系统公告
-		<small>列表</small>
-	</h1>
-	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
-		<li>管理</li>
-		<li>内容管理</li>
-		<li><a href="<?echo base_url('admin/announce');?>">系统公告</a></li>
-	</ol>
-</section>
-
+	<?echo $pageheader;?>
 <!-- Main content -->
 <section class="content">
 	<div class="row">
 		<div class="col-md-12">
 			<div class="box">
 				<div class="box-header">
-					<h3 class="box-title">公告列表</h3>
+					<h3 class="box-title">模块列表</h3>
 					<div class="box-tools pull-right">
-						<a href="<?echo base_url('admin/announce_add')?>" class="btn btn-primary btn-sm">发布新公告</a>
 					</div>
 				</div><!-- /.box-header -->
 				<div class="box-body no-padding">
 					<table class="table table-striped">
 						<tr>
-							<th style="width: 10px">#</th>
-							<th>标题</th>
-							<th>发布日期</th>
-							<th>标签</th>
+							<th style="width: 40px;">#</th>
+							<th>模块名</th>
+							<th>排序</th>
+							<th>控制器</th>
+							<th>方式</th>
+							<th>侧栏显示</th>
+							<th>单独显示</th>
 							<th>操作</th>
 						</tr>
-						<?print_r($announcelist);?>
+						<?print_r($modulelist);?>
 					</table>
 				</div><!-- /.box-body -->
 				<div class="box-footer clearfix">
-					<?print_r($announcelistpage);?>
 				</div><!-- /.box-booter -->
 			</div><!-- /.box -->
 		</div><!-- /.col-->
@@ -88,30 +77,5 @@
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
 <!-- Bootstrap WYSIHTML5 -->
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
-<?//跨站请求伪造
-$csrf = array(
-	'name' => $this->security->get_csrf_token_name(),
-	'hash' => $this->security->get_csrf_hash()
-);
-?>
-<script>
-	$(".bg-red").each(function(){
-		$(this).click(function(){
-			id=$(this).data('deleteid');
-			t=$(this).parent().parent();
-			$.ajax({
-				type: "post",
-				url: "<?=base_url('admin/announce_delete')?>",
-				data: {announce_id:id,<?=$csrf['name']?>:'<?=$csrf['hash']?>'},
-				dataType: "json",
-				success: function(data){
-					console.log(data);
-					$.scojs_message('删除成功', $.scojs_message.TYPE_OK);
-					t.remove();
-				}
-			});
-		})
-	})
-</script>
 </body>
 </html>

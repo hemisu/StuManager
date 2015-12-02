@@ -1,13 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Jw extends CI_Controller {
+class Jw extends Base_Controller {
 
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->model(array('Times_model'));
-		$this->load->helper('url');
 	}
 	private function curl_request($url,$post='',$cookie='', $returnCookie=0){
     $curl = curl_init();
@@ -57,33 +55,13 @@ class Jw extends CI_Controller {
 	     return $res;
 //		print_r($res);
 	}
-	public function getViewchengji(){
-		$res=array();
-		$url = "http://jwxt.zust.edu.cn/xscj_gc.aspx?xh=1130320108";
-		$cookie = $this->login();
-		$result = $this->curl_request($url,'',$cookie);
-		$pattern = '/<input type="hidden" name="__VIEWSTATE" value="(.*?)" \/>/is';
-		preg_match_all($pattern, $result, $matches);
-		$res[0] = $matches[1][0];
-		return $res[0];
-//		print_r($result);
-	}
-	private function login($xh,$pwd){
-	     $url = 'http://jwxt.zust.edu.cn/default2.aspx';
-	     $viewState = $this->getView();
-	     $post['__VIEWSTATE'] = $viewState[0];
-	     $post['__VIEWSTATEGENERATOR'] = isset($viewState[1])?$viewState[1]:null;
-	     $post['TextBox1'] = $xh;
-	     $post['TextBox2'] = $pwd;
-	     $post['txtSecretCode'] = '';
-	     $post['lbLanguage'] = '';
-	     $post['RadioButtonList1'] = iconv('utf-8', 'gb2312', '学生');
-	     $post['Button1'] = iconv('utf-8', 'gb2312', '登录');
-	     $results = $this->curl_request($url,$post,'', 1);
-	     return $results['cookie'];
-//			echo $results['cookie'];
-	}
-	//个人专业查询
+
+	/**
+	 * 个人信息查询
+	 * @param string $xh
+	 * @param string $pwd
+	 * @return mixed
+	 */
 	private function major($xh = "",$pwd = ""){
 
 		$result = $this->information($xh, $pwd);
@@ -109,6 +87,12 @@ class Jw extends CI_Controller {
 
 	}
 
+	/**
+	 * 课表页面 用于获取专业
+	 * @param string $xh
+	 * @param string $pwd
+	 * @return mixed
+	 */
 	private function information($xh = "",$pwd = ""){
 
 		header("Content-Type:text/html;charset=utf-8");
@@ -121,25 +105,55 @@ class Jw extends CI_Controller {
 	}
 	public function binding(){
 
-		$jwinfo['student_id'] = $this->security->xss_clean($this->input->post('student_id'));
+		$jwinfo['student_id'] = $student_id = $this->security->xss_clean($this->input->post('student_id'));
 		$jwinfo['password'] = $this->security->xss_clean($this->input->post('password'));
 		$jwget = $this->major($jwinfo['student_id'] ,$jwinfo['password']);
+		//无权限时访问路径
+		if(!empty($_SESSION['url_forward'])){$next_url=$_SESSION['url_forward'];}else{$next_url=base_url('dashboard');}
+
 		if(!empty($jwget['student_id'])){
 			$jwUserInfo=array(
 				'student_id' => $jwget['student_id'],
 				'username' => $jwget['name'],
 				'xy' => $jwget['xy'],
 				'majorclassnum' => $jwget['major'].$jwget['classnum'],
-				'next_url' => base_url('welcome/dashboard')
+				'next_url' => $next_url
 			);
+			$savejwinfo['jw_password']=base64_encode($jwinfo['password']);
+			$this->User_model->update($savejwinfo,"`student_id`=$student_id");
 			echo json_encode($jwUserInfo);
 			$this->session->set_userdata($jwUserInfo);
 		}else{
-			echo json_encode(array(
-				'response' => 'error'
-			));
+			echo json_encode(array('response' => 'error'));
 		}
 	}
+	public function getViewchengji(){
+		$res=array();
+		$url = "http://jwxt.zust.edu.cn/xscj_gc.aspx?xh=1130320108";
+		$cookie = $this->login();
+		$result = $this->curl_request($url,'',$cookie);
+		$pattern = '/<input type="hidden" name="__VIEWSTATE" value="(.*?)" \/>/is';
+		preg_match_all($pattern, $result, $matches);
+		$res[0] = $matches[1][0];
+		return $res[0];
+//		print_r($result);
+	}
+	public  function login($xh,$pwd){
+	     $url = 'http://jwxt.zust.edu.cn/default2.aspx';
+	     $viewState = $this->getView();
+	     $post['__VIEWSTATE'] = $viewState[0];
+	     $post['__VIEWSTATEGENERATOR'] = isset($viewState[1])?$viewState[1]:null;
+	     $post['TextBox1'] = $xh;
+	     $post['TextBox2'] = $pwd;
+	     $post['txtSecretCode'] = '';
+	     $post['lbLanguage'] = '';
+	     $post['RadioButtonList1'] = iconv('utf-8', 'gb2312', '学生');
+	     $post['Button1'] = iconv('utf-8', 'gb2312', '登录');
+	     $results = $this->curl_request($url,$post,'', 1);
+	     return $results['cookie'];
+//			echo $results['cookie'];
+	}
+
 	public function mainpage(){
 		$cookie = $this->login();
 	     $url = 'http://jwxt.zust.edu.cn/xs_main.aspx?xh=1130320108';

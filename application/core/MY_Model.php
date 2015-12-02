@@ -9,7 +9,7 @@ class MY_Model extends CI_Model{
 
 class Base_Model extends MY_Model{
 	protected $table_name = '';
-	public  $db_tablepre = '';
+	public  $db_tablepre = 'stu_';
 
 
 	function __construct(){

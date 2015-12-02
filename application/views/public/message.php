@@ -9,17 +9,7 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 <!-- Content Header (Page header) -->
-<section class="content-header">
-	<h1>
-		消息
-		<small>13 个新消息</small>
-	</h1>
-	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
-		<li class="active">消息</li>
-	</ol>
-</section>
-
+	<?echo $pageheader;?>
 <!-- Main content -->
 <section class="content">
 <div class="row">

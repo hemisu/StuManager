@@ -33,7 +33,7 @@ $(document).ready(function(){
 			} else {
 				console.log(result);
 				$.scojs_message('提交成功', $.scojs_message.TYPE_OK);
-				//$.GoUrl(result.next_url, 1);
+				$.GoUrl(result.next_url, 1);
 			}
 		}, 'json');
 	})

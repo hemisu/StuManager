@@ -23,7 +23,7 @@
 			<div class="box-body table-responsive">
 				<table class="table table-hover"
 				       data-toggle="table"
-				       data-url="<?php echo base_url('/welcome/userjson');?>"
+				       data-url="<?php echo base_url('/admin/user_library_json');?>"
 				       data-pagination="true"
 				       data-page-size="20"
 				       data-page-list="[25, 50, 100, ALL]"

@@ -37,8 +37,8 @@ class Announce_model extends Base_Model {
 			$html.='<td>'.$val['title'].'</td>';
 			$html.='<td>'.$val['date'].'</td>';
 			$html.='<td><span class="btn btn-xs btn-'.$val['level'].'">'.$val['level'].'</span></td>';
-			$html.='<td><a href="'.base_url('admin/announce_edit').'/announce_id/'.$val['id'].'" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> 编辑 </a>
-			<a data-deleteid="'.$val['id'].'" class="btn bg-red color-palette btn-sm"><i class="fa fa-trash"></i> 删除 </a></td>';
+			$html.='<td><a href="'.base_url('admin/announce_edit').'/announce_id/'.$val['id'].'" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> 编辑 </a> ';
+			$html .= '<a href="javascript:if(confirm(\'确定要删除吗\'))window.location.href=\''.base_url('admin/announce').'_delete/announce_id/'.$val['id'].'\';" class="btn btn-white btn-sm"><span class="glyphicon glyphicon-edit"></span> 删除</a></td>';
 		}
 		return $html;
 	}

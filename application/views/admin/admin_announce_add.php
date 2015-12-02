@@ -9,20 +9,7 @@
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 <!-- Content Header (Page header) -->
-<section class="content-header">
-	<h1>
-		系统公告
-		<small>添加</small>
-	</h1>
-	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
-		<li>管理</li>
-		<li><a href="<?echo base_url('admin/announce');?>">内容管理</a></li>
-		<li><a href="<?echo base_url('admin/announce');?>">系统公告</a></li>
-		<li class="active">系统公告添加</li>
-	</ol>
-</section>
-
+	<?echo $pageheader;?>
 <!-- Main content -->
 <section class="content">
 	<div class="row">

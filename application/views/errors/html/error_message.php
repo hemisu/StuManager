@@ -4,6 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv=refresh content=<?echo $s;?>;URL="<?echo $next_url;?>">
 <title>Error</title>
 <style type="text/css">
 
@@ -57,8 +58,8 @@ p {
 </head>
 <body>
 	<div id="container">
-		<h1><?php echo $heading; ?></h1>
-		<?php echo $message; ?>
+		<h1><?php echo $msg; ?></h1>
+		<p>本页面将在<?php echo $s;?> 秒后跳转...</p>
 	</div>
 </body>
 </html>

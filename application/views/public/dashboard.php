@@ -4,17 +4,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
 <!-- Content Header (Page header) -->
-<section class="content-header">
-	<h1>
-		控制台
-		<small>Version 2.0</small>
-	</h1>
-	<ol class="breadcrumb">
-		<li><a href="#"><i class="fa fa-dashboard"></i> 首页</a></li>
-		<li class="active">控制台</li>
-	</ol>
-</section>
-
+	<?echo $pageheader;?>
 <!-- Main content -->
 <section class="content">
 <!-- Info boxes -->

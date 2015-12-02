@@ -6,7 +6,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>AdminLTE 2 | Log in</title>
+	<link href="favicon.png" rel="icon" type="image/x-icon" />
+	<title>教务系统账号登录 - 学生管理系统 StuManager</title>
 	<!-- Tell the browser to be responsive to screen width -->
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 	<!-- Bootstrap 3.3.5 -->
@@ -71,7 +72,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				</div><!-- /.col -->
 			</div>
 		</form>
-		<a href="<?php echo base_url('welcome/index');?>" class="text-center">我已经有账号了</a>
+		<a href="<?php echo base_url('login');?>" class="text-center">我已经有账号了</a>
 	</div><!-- /.form-box -->
 </div><!-- /.register-box -->
 
@@ -113,9 +114,115 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	};
 </script>
 <script src="<?php echo base_url('/public/AdminLTE2/plugins/pace/pace.js');?>"></script>
-<!-- require.js -->
-<script data-main="<?php echo base_url('/public/AdminLTE2/common');?>" src="<?php echo base_url('/public/AdminLTE2/require.js');?>"></script>
-<script src="<?php echo base_url();?>public/js/<?php echo $controller_name?>.js"></script>
+<!-- jQuery 2.1.4 -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/jQuery/jQuery-2.1.4.min.js"></script>
+<!-- Bootstrap 3.3.5 -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/bootstrap/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/fastclick/fastclick.min.js"></script>
+<!-- AdminLTE App -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/app.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/demo.js"></script>
+<!-- bootstrapValidator -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-validator/js/bootstrapValidator.min.js"></script>
+<!-- sco.message -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
+
+<!-- iCheck -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/iCheck/icheck.min.js"></script>
+
+<script>
+	$(document).ready(function(){
+		$('#agreementBottom').click(function () {
+			$('#acceptTerms').iCheck('check');
+		});
+		$('#modalClose').click(function () {
+			$('#acceptTerms').iCheck('uncheck');
+		});
+		$('#bindingForm').bootstrapValidator({
+			framework: 'bootstrap',
+			icon: {
+				valid: 'glyphicon glyphicon-ok',
+				invalid: 'glyphicon glyphicon-remove',
+				validating: 'glyphicon glyphicon-refresh'
+			},
+			fields: {
+				student_id: {
+					validators: {
+						notEmpty: {
+							message: '学号不能为空'
+						},
+						stringLength: {
+							min: 10,
+							max: 10,
+							message: '学号为10位'
+						},
+						regexp: {
+							regexp: /^[0-9]+$/,
+							message: '学号只能是数字'
+						}
+					}
+				},
+				password: {
+					validators: {
+						notEmpty: {
+							message: '密码不能为空'
+						}
+					}
+				},
+				acceptTerms: {
+					validators: {
+						notEmpty: {
+							message: '需要同意协议'
+						}
+					}
+				}
+			}
+		})
+			.on('success.form.bv', function (e) {
+				// Prevent form submission
+				e.preventDefault();
+
+				// Get the form instance
+				var $form = $(e.target);
+
+				// Get the BootstrapValidator instance
+				var bv = $form.data('bootstrapValidator');
+
+				// Use Ajax to submit form data
+				$.post($form.attr('action'), $form.serialize(), function (result) {
+					if (result.response === 'error') {
+
+						$.scojs_message('用户名或者密码错误', $.scojs_message.TYPE_ERROR);
+						$('#bindingForm').data('formValidation').resetForm();
+
+					} else {
+						console.log(result);
+						$.scojs_message(result.username + '&nbsp;,欢迎登陆', $.scojs_message.TYPE_OK);
+						$.GoUrl(result.next_url, 1);
+					}
+				}, 'json');
+			})
+			.find('input[name="acceptTerms"]')
+			// Init icheck elements
+			.iCheck({
+				// The tap option is only available in v2.0
+				tap: true,
+				checkboxClass: 'icheckbox_square-blue',
+				radioClass: 'iradio_square-blue',
+				increaseArea: '20%' // optional
+			})
+			// Called when the radios/checkboxes are changed
+			.on('ifChanged', function (e) {
+				// Get the field name
+				var field = $(this).attr('name');
+				$('#bindingForm').bootstrapValidator('revalidateField', field);
+			})
+			.end();
+	});
+</script>
+
 
 </body>
 </html>

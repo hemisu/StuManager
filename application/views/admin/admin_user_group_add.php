@@ -16,24 +16,39 @@
 		<div class="col-md-12">
 			<div class="box">
 				<div class="box-header">
-					<h3 class="box-title">公告列表</h3>
+					<h3 class="box-title">用户组添加</h3>
 					<div class="box-tools pull-right">
 					</div>
 				</div><!-- /.box-header -->
-				<div class="box-body no-padding">
-					<table class="table table-striped">
-						<tr>
-							<th style="width: 40px;">#</th>
-							<th>用户组ID</th>
-							<th>用户组名</th>
-							<th>介绍</th>
-							<th>操作</th>
-						</tr>
-						<?echo ($group_list_html);?>
-					</table>
+				<div class="box-body pad">
+					<?//跨站请求伪造
+					$csrf = array(
+						'name' => $this->security->get_csrf_token_name(),
+						'hash' => $this->security->get_csrf_hash()
+					);
+					?>
+					<form id="groupForm" action="<?echo base_url('admin/user_group_add_post');?>" method="post">
+					<div class="form-group">
+						<label>用户组ID</label>
+						<input type="text" class="form-control" name="group_id" placeholder="输入用户组ID">
+					</div>
+					<div class="form-group">
+						<label>用户组名</label>
+						<input type="text" class="form-control" name="group_name" placeholder="输入用户组名">
+					</div>
+					<div class="form-group">
+						<label>用户组名</label>
+						<textarea class="form-control" rows="3" name="description" placeholder="用户组介绍"></textarea>
+					</div>
+						<input type="hidden" name="<?=$csrf['name'];?>" value="<?=$csrf['hash'];?>" />
 				</div><!-- /.box-body -->
 				<div class="box-footer clearfix">
+					<div class="pull-right">
+						<button type="submit" class="btn btn-primary"><i class="fa fa-pencil"></i> 提交</button>
+					</div>
+					<a class="btn btn-default" href="<?echo base_url('admin/user_group_list')?>"><i class="fa fa-times"></i> 返回</a>
 				</div><!-- /.box-booter -->
+					</form>
 			</div><!-- /.box -->
 		</div><!-- /.col-->
 	</div><!-- ./row -->
@@ -72,32 +87,7 @@
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-validator/js/bootstrapValidator.min.js"></script>
 <!-- sco.message -->
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
-<!-- Bootstrap WYSIHTML5 -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
-<?//跨站请求伪造
-$csrf = array(
-	'name' => $this->security->get_csrf_token_name(),
-	'hash' => $this->security->get_csrf_hash()
-);
-?>
-<script>
-	$(".bg-red").each(function(){
-		$(this).click(function(){
-			id=$(this).data('deleteid');
-			t=$(this).parent().parent();
-			$.ajax({
-				type: "post",
-				url: "<?=base_url('admin/announce_delete')?>",
-				data: {announce_id:id,<?=$csrf['name']?>:'<?=$csrf['hash']?>'},
-				dataType: "json",
-				success: function(data){
-					console.log(data);
-					$.scojs_message('删除成功', $.scojs_message.TYPE_OK);
-					t.remove();
-				}
-			});
-		})
-	})
-</script>
+<!-- control -->
+<script src="<?php echo base_url();?>public/js/<?php echo $controller_name.'_'.$method_name?>.js"></script>
 </body>
 </html>

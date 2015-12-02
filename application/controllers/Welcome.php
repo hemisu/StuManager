@@ -21,27 +21,16 @@ class Welcome extends CI_Controller {
 	function __construct()
 	{
 		parent::__construct();
-		$this->load->model(array('Times_model','Announce_model'));
+		$this->load->model(array('User_model','Announce_model'));
 		$this->load->helper('url');
 	}
 	public function index()
 	{
-		$this->load->view('login');
+
 	}
-	public function binding()
-	{
-//		print_r($this->page_data);
-		$data['controller_name']= trim($this->router->class);
-		$data['method_name']= trim($this->router->method);
-		$this->load->view('public/binding',$data);
-	}
+
 	public function dashboard()
 	{
-		$page_data['controller_name']= trim($this->router->class);
-		$page_data['method_name']= trim($this->router->method);
-		$sqlwhere = array('student_id' => intval($_SESSION['student_id']));//查询
-		$page_data['userinfo'] = $this->Times_model->select($sqlwhere,'`student_id`,`username`,`student_id`,`email`,`qq`,`college`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`,`status`,`remarks`')[0];
-//		print_r($page_data['userinfo']);
 		$page_data['announcelist']=$this->Announce_model->announce_dashboard_html();
 		$this->load->view('head',$page_data);
 		$this->load->view('siderbar',$page_data);
@@ -49,7 +38,7 @@ class Welcome extends CI_Controller {
 	}
 	public function t(){
 		$username="1130320108";
-		$rtime = $this->Times_model->get_one(array('student_id'=>$username));
+		$rtime = $this->User_model->get_one(array('student_id'=>$username));
 		print_r($rtime);
 	}
 	public function pass(){
@@ -57,7 +46,7 @@ class Welcome extends CI_Controller {
 		echo 'salt:'.$salt."<br>";
 		$password = '888888';
 		echo hash('md5',$password.$salt);
-		$userinfo = $this->Times_model->select('','`student_id`,`salt`,`password`');
+		$userinfo = $this->User_model->select('','`student_id`,`salt`,`password`');
 		$newarr = array();
 //		echo "<pre>";
 //		foreach($userinfo as $k=>$v){
@@ -80,13 +69,13 @@ class Welcome extends CI_Controller {
 		$data['controller_name']= trim($this->router->class);
 		$data['method_name']= trim($this->router->method);
 		$username="1130320108";
-		$userinfo = $this->Times_model->select('');
+		$userinfo = $this->User_model->select('');
 		$this->load->view('head');
 		$this->load->view('siderbar');
 		$this->load->view('public/table',$data);
 	}
 	public function userjson(){
-		$userinfo = $this->Times_model->select('','`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`');
+		$userinfo = $this->User_model->select('','`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`');
 		echo json_encode($userinfo);
 
 	}
