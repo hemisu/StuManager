@@ -21,16 +21,13 @@
 					</div>
 				</div><!-- /.box-header -->
 				<div class="box-body no-padding">
-<!--					<pre>-->
-<!--						--><?//print_r($group_priv_info);?>
-<!--					</pre>-->
 					<?//跨站请求伪造
 					$csrf = array(
 						'name' => $this->security->get_csrf_token_name(),
 						'hash' => $this->security->get_csrf_hash()
 					);
 					?>
-					<form id="groupForm" action="<?echo base_url('admin/user_group_priv_post');?>" method="post">
+					<form id="groupForm" action="<?echo base_url('admin/user_group_priv');?>" method="post">
 					<table class="table table-striped table-hover">
 						<tr>
 							<th style="width: 40px;">#</th>
@@ -87,7 +84,9 @@
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-validator/js/bootstrapValidator.min.js"></script>
 <!-- sco.message -->
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
-<!-- Bootstrap WYSIHTML5 -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js"></script>
+<!-- sco.message -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
+<!-- control -->
+<script src="<?php echo base_url();?>public/js/<?php echo $controller_name.'_'.$method_name?>.js"></script>
 </body>
 </html>

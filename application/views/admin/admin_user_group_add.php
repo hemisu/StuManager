@@ -27,7 +27,7 @@
 						'hash' => $this->security->get_csrf_hash()
 					);
 					?>
-					<form id="groupForm" action="<?echo base_url('admin/user_group_add_post');?>" method="post">
+					<form id="groupForm" action="<?echo base_url('admin/user_group_add');?>" method="post">
 					<div class="form-group">
 						<label>用户组ID</label>
 						<input type="text" class="form-control" name="group_id" placeholder="输入用户组ID">

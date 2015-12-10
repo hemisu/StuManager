@@ -31,7 +31,7 @@
 						'hash' => $this->security->get_csrf_hash()
 					);
 					?>
-					<form id="announceForm" action="<?echo base_url('admin/announce_add_post');?>" method="post">
+					<form id="announceForm" action="<?echo base_url('admin/announce_add');?>" method="post">
 						<div class="form-group">
 							<label>标题</label>
 							<input type="text" class="form-control" name="title" placeholder="请输入公告标题">

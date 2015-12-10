@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: hekunyu
- * Date: 15/11/29
- * Time: 下午6:46
+ * Date: 15/12/6
+ * Time: 下午8:33
  */
 ?>
 <!-- Content Wrapper. Contains page content -->
@@ -16,40 +16,40 @@
 		<div class="col-md-12">
 			<div class="box">
 				<div class="box-header">
-					<h3 class="box-title">用户组修改</h3>
+					<h3 class="box-title">学业成绩</h3>
 					<div class="box-tools pull-right">
-
 					</div>
 				</div><!-- /.box-header -->
-				<div class="box-body pad">
-					<?//跨站请求伪造
-					$csrf = array(
-						'name' => $this->security->get_csrf_token_name(),
-						'hash' => $this->security->get_csrf_hash()
-					);
-					?>
-					<form id="groupForm" action="<?echo base_url('admin/user_group_edit');?>" method="post">
-					<div class="form-group">
-						<label>用户组ID</label>
-						<input type="text" class="form-control" name="group_id" value="<?=($group_info['group_id'])?:'Data Error:@param:group_info';?>">
-					</div>
-					<div class="form-group">
-						<label>用户组名</label>
-						<input type="text" class="form-control" name="group_name" value="<?=($group_info['group_name'])?:'Data Error:@param:group_info';?>">
-					</div>
-					<div class="form-group">
-						<label>用户组名</label>
-						<textarea class="form-control" rows="3" name="description"><?=($group_info['description'])?:'';?></textarea>
-					</div>
-					<input type="hidden" name="<?=$csrf['name'];?>" value="<?=$csrf['hash'];?>" />
+				<div class="box-body no-padding">
+					<table class="table table-striped table-responsive">
+						<tr>
+							<th>学年</th>
+							<th>学期</th>
+							<th>课程名称</th>
+							<th>课程性质</th>
+							<th>学分</th>
+							<th>绩点</th>
+							<th>成绩</th>
+							<th>辅修标记</th>
+							<th>补考成绩</th>
+							<th>重修成绩</th>
+							<th>学院名称</th>
+							<th>重修标记</th>
+						</tr>
+						<?foreach($scoreinfo as $k){
+							echo '<tr>';
+							unset($k['student_id']);
+							unset($k['score_id']);
+							foreach($k as $v){
+								echo '<td>'.$v.'</td>';
+							}
+							echo '</tr>';
+						}?>
+
+					</table>
 				</div><!-- /.box-body -->
 				<div class="box-footer clearfix">
-					<div class="pull-right">
-						<button type="submit" class="btn btn-primary"><i class="fa fa-pencil"></i> 提交</button>
-					</div>
-					<a class="btn btn-default" href="<?echo base_url('admin/user_group_list')?>"><i class="fa fa-times"></i> 返回</a>
 				</div><!-- /.box-booter -->
-				</form>
 			</div><!-- /.box -->
 		</div><!-- /.col-->
 	</div><!-- ./row -->
@@ -88,7 +88,5 @@
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-validator/js/bootstrapValidator.min.js"></script>
 <!-- sco.message -->
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
-<!-- control -->
-<script src="<?php echo base_url();?>public/js/<?php echo $controller_name.'_'.$method_name?>.js"></script>
 </body>
 </html>

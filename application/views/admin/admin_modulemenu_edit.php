@@ -57,7 +57,7 @@
 						'hash' => $this->security->get_csrf_hash()
 					);
 					?>
-					<form id="moduleForm" action="<?echo base_url("admin/modulemenu_edit_post").'/menu_id/'.$father_menu_info['menu_id'];?>" method="post">
+					<form id="moduleForm" action="<?echo base_url("admin/modulemenu_edit").'/menu_id/'.$father_menu_info['menu_id'];?>" method="post">
 						<?
 						?>
 						<div class="row">

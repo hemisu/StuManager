@@ -15,7 +15,8 @@ class Base_Controller extends MY_Controller
 {
 	function __construct(){
 		parent::__construct();
-		$this->load->model(array('User_model','Announce_model','Module_menu_model'));
+		$this->load->model(array('User_model','User_score_model','User_ranktest_model',
+			'Announce_model','Module_menu_model'));
 		$this->load->helper('url');
 		$this->load->library('tree','session');
 	}
@@ -26,7 +27,7 @@ class Login_Controller extends MY_Controller
 	function __construct(){
 		parent::__construct();
 		//======载入模块======
-		$this->load->model(array('User_model',
+		$this->load->model(array('User_model','User_score_model','User_ranktest_model',
 			'Announce_model','Module_menu_model',
 			'User_group_priv_model','User_group_model'));
 		$this->load->helper('url');
@@ -40,7 +41,7 @@ class Login_Controller extends MY_Controller
 
 		$this->page_data['pageheader'] = $this->Module_menu_model->get_page_header_html();//本页面信息
 		$this->page_data['pageheaderinfo'] = $this->Module_menu_model->get_current_page_info();
-
+//		$this->Module_menu_model->get_menu_active();
 		$this->check_member();//判断登陆并传递当前页面的值
 		$this->check_priv();//判断是否有权限
 

@@ -18,17 +18,23 @@ class Module_menu_model extends Base_Model {
 			}else if($v['show_alone']){//独立显示为一栏
 				if($v['is_parent']){//是父元素
 					if(empty($v['arr_childid'])){//父元素但无子元素 => 单独显示，无下拉菜单
-						$html.= '<li><a href="'.base_url('').$v['controller'].'/'.$v['method'].'">';
+						$html.= '<li class="';
+						if(trim($this->router->class)==$v['controller'] && trim($this->router->method)==$v['method'])$html.='active';
+						$html.=	'"><a href="'.base_url('').$v['controller'].'/'.$v['method'].'">';
 						$html.= '<i class="fa '.$v['css_icon'].'"></i><span>'.$v['menu_name'].'</span>';//显示css_icon和栏目名
 					}else{//父元素有子元素 => 下拉菜单样式
-						$html.='<li class="treeview"><a href="#">';
+						$html.= '<li class="treeview';
+						$html.='active';
+						$html.= '"><a href="#">';
 						$html.= '<i class="fa '.$v['css_icon'].'"></i><span>'.$v['menu_name'].'</span>';//显示css_icon和栏目名
-						$html.='<i class="fa fa-angle-left pull-right"></i></a>';
+						$html.= '<i class="fa fa-angle-left pull-right"></i></a>';
 						$html.= $this->get_child_menu_html($v,$siderinfo);
 					}
 					$html.= '</li>';
 				}else{//不是父元素但独立显示为一栏 无下拉菜单
-					$html.= '<li>'.'<a href="'.base_url().$v['controller'].'/'.$v['method'].'">';
+					$html.= '<li class="';
+					if(trim($this->router->class)==$v['controller'] && trim($this->router->method)==$v['method'])$html.='active';
+					$html.= '">'.'<a href="'.base_url().$v['controller'].'/'.$v['method'].'">';
 					$html.= '<i class="fa '.$v['css_icon'].'"></i> <span>'.$v['menu_name'].'</span>';
 					$html.= '</a></li>';
 				}
@@ -37,7 +43,6 @@ class Module_menu_model extends Base_Model {
 		$html .= '</ul>';
 		return $html;
 	}
-
 	/**
 	 * 得到子级
 	 * @param array 正在被遍历的一条内容数组
@@ -63,7 +68,7 @@ class Module_menu_model extends Base_Model {
 					}
 
 					if(empty($childinfo['arr_childid']) || !$childinfo['child_display']){//无子元素|子集不显示 => 单独显示，无下拉菜单
-						$html.= '<li>';
+						$html.= '<li class="active">';
 						$html.= '<a href="'.base_url().$childinfo['controller'].'/'.$childinfo['method'].'">';
 						$html.= '<i class="fa '.$childinfo['css_icon'].'"></i><span>'.$childinfo['menu_name'].'</span></a>';//显示css_icon和栏目名
 					}else{//有子元素 => 下拉菜单样式

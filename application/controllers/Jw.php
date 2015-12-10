@@ -103,6 +103,28 @@ class Jw extends Base_Controller {
 		return $result;
 
 	}
+
+	/**
+	 * 登陆获取cookie
+	 * @param $xh
+	 * @param $pwd
+	 * @return mixed
+	 */
+	public  function login($xh,$pwd){
+		$url = 'http://jwxt.zust.edu.cn/default2.aspx';
+		$viewState = $this->getView();
+		$post['__VIEWSTATE'] = $viewState[0];
+		$post['__VIEWSTATEGENERATOR'] = isset($viewState[1])?$viewState[1]:null;
+		$post['TextBox1'] = $xh;
+		$post['TextBox2'] = $pwd;
+		$post['txtSecretCode'] = '';
+		$post['lbLanguage'] = '';
+		$post['RadioButtonList1'] = iconv('utf-8', 'gb2312', '学生');
+		$post['Button1'] = iconv('utf-8', 'gb2312', '登录');
+		$results = $this->curl_request($url,$post,'', 1);
+		return $results['cookie'];
+//			echo $results['cookie'];
+	}
 	public function binding(){
 
 		$jwinfo['student_id'] = $student_id = $this->security->xss_clean($this->input->post('student_id'));
@@ -121,16 +143,41 @@ class Jw extends Base_Controller {
 			);
 			$savejwinfo['jw_password']=base64_encode($jwinfo['password']);
 			$this->User_model->update($savejwinfo,"`student_id`=$student_id");
+			//保存成绩
+			foreach($this->chengji($jwinfo['student_id'],$jwinfo['password']) as $firstr){
+				$r['schoolyear']=$firstr[0];$r['term']=$firstr[1];$r['student_id']=$firstr[2];$r['coursename']=$firstr[3];
+				$r['nature']=$firstr[4];$r['credit']=$firstr[6];$r['points']=$firstr[7];$r['score']=$firstr[8];
+				$r['minormark']=$firstr[9];$r['makeup']=$firstr[10];$r['rebuild']=$firstr[11];$r['collegename']=$firstr[12];
+				$r['rebuildmark']=$firstr[13];
+				if($getinfo=$this->User_score_model->get_one($r)){
+					$this->User_score_model->update($r,array('score_id'=>$getinfo['score_id']));
+				}else{
+					$this->User_score_model->insert($r);
+				}
+			}
+			//保存考证成绩
+			unset($r);
+			foreach($this->djks($jwinfo['student_id'],$jwinfo['password']) as $secstr){
+				$r['schoolyear'] = $secstr[0];$r['term'] = $secstr[1];$r['testname'] = $secstr[2];$r['student_id'] = $secstr[3];
+				$r['testdate'] = $secstr[4];$r['score'] = $secstr[5];$r['listeningscore'] = $secstr[6];
+				$r['readingscore'] = $secstr[7];$r['writingscore'] = $secstr[8];$r['comprehensivescore'] = $secstr[9];
+				if(!$getinfo=$this->User_ranktest_model->get_one($r)){
+					$this->User_ranktest_model->insert($r);
+				}
+			}
 			echo json_encode($jwUserInfo);
 			$this->session->set_userdata($jwUserInfo);
 		}else{
 			echo json_encode(array('response' => 'error'));
 		}
 	}
-	public function getViewchengji(){
+	/*
+	 * 获取成绩页面viewstate
+	 */
+	private function getViewchengji($xh,$pwd){
 		$res=array();
-		$url = "http://jwxt.zust.edu.cn/xscj_gc.aspx?xh=1130320108";
-		$cookie = $this->login();
+		$url = "http://jwxt.zust.edu.cn/xscj_gc.aspx?xh=".$xh;
+		$cookie = $this->login($xh,$pwd);
 		$result = $this->curl_request($url,'',$cookie);
 		$pattern = '/<input type="hidden" name="__VIEWSTATE" value="(.*?)" \/>/is';
 		preg_match_all($pattern, $result, $matches);
@@ -138,22 +185,244 @@ class Jw extends Base_Controller {
 		return $res[0];
 //		print_r($result);
 	}
-	public  function login($xh,$pwd){
-	     $url = 'http://jwxt.zust.edu.cn/default2.aspx';
-	     $viewState = $this->getView();
-	     $post['__VIEWSTATE'] = $viewState[0];
-	     $post['__VIEWSTATEGENERATOR'] = isset($viewState[1])?$viewState[1]:null;
-	     $post['TextBox1'] = $xh;
-	     $post['TextBox2'] = $pwd;
-	     $post['txtSecretCode'] = '';
-	     $post['lbLanguage'] = '';
-	     $post['RadioButtonList1'] = iconv('utf-8', 'gb2312', '学生');
-	     $post['Button1'] = iconv('utf-8', 'gb2312', '登录');
-	     $results = $this->curl_request($url,$post,'', 1);
-	     return $results['cookie'];
-//			echo $results['cookie'];
+	public  function socredata($xh,$pwd){
+		$cookie = $this->login($xh,$pwd);
+		$url = "http://jwxt.zust.edu.cn/xscj_gc.aspx?xh=".$xh;
+		$post['ddlXN'] = '';
+		$post['ddlXQ'] = '';
+		$post['Button2'] = '在校学习成绩查询';
+		$post['__VIEWSTATE'] = $this->getViewchengji($xh,$pwd);
+
+		$result = $this->curl_request($url,$post,$cookie);
+		// $result = iconv('gbk', 'utf-8', $result);
+//		 print_r($result);
+//		echo '<pre>';
+		$code = str_replace("\n",'',$result) ;
+		preg_match_all("/(?<=<span id=\"pjxfjd\"><b>)平均学分绩点：(.*?)(?=<\/b><\/span>)/is",$code,$pjxfjd);//平均学分绩点
+//		echo $pjxfjd[1][0].'<br/>';//输出平均学分绩点
+		$datelist = strstr($code, '<table id="TabTj" width="100%">',true);
+//		preg_match("/<tr.*?<\/tr>/iUs",$code,$newcode);
+//		print_r($datelist);
+		/*
+				[0] => 学年
+				[1] => 学期
+				[2] => 课程代码 1
+				[3] => 课程名称
+				[4] => 课程性质
+				[5] => 课程归属 1
+				[6] => 学分
+				[7] => 绩点
+				[8] => 成绩
+				[9] => 辅修标记
+				[10] => 补考成绩
+				[11] => 重修成绩
+				[12] => 学院名称
+				[13] => 重修标记
+
+				[0] => 2013-2014
+				[1] => 1
+				[2] => 02113020
+				[3] => C语言程序设计
+				[4] => 必修课
+				[5] =>
+				[6] => 4.0
+				[7] => 4.1
+				[8] => 91
+				[9] => 0
+				[10] =>
+				[11] =>
+				[12] => 信息与电子工程学院
+				[13] => 0
+		 */
+		$tmp="/<tr.*>(.*)<\/tr>/iUs";
+		preg_match_all($tmp,$datelist,$macthes);
+
+		$tmp="/<td.*>(.*)<\/td>/iUs";
+		foreach($macthes[1] as $tr)
+		{
+			preg_match_all($tmp,$tr,$td);
+			unset($td[1][2]);//去除课程代码
+			unset($td[1][5]);//去除课程归属
+			switch($td[1][8]){
+				case '优秀':$td[1][8]=95;break;//五级制转化为百分制
+				case '良好':$td[1][8]=85;break;
+				case '中等':$td[1][8]=75;break;
+				case '及格':$td[1][8]=65;break;
+				case '不及格':$td[1][8]=0;break;
+				case '合格':$td[1][8]=85;break;//二级制转化为百分制
+				default:break;
+			}
+			$score[]=$td[1];
+		}
+		unset($score[0]);
+//		print_r($score);
+
+		echo '<table><tr><td>学年</td><td>学期</td><td>课程名称</td><td>课程性质</td><td>学分</td><td>绩点</td><td>成绩</td><td>辅修标记</td><td>补考成绩</td><td>重修成绩</td><td>学院名称</td><td>重修标记</td></tr>';
+		foreach($score as $k){
+			echo '<tr>';
+			foreach($k as $v){
+				echo '<td>'.$v.'</td>';
+			}
+			echo '</tr>';
+		}
+		echo '</table>';
+	}
+	/*
+	 * 获取考证页面
+	 */
+	private function djks($xh,$pwd){
+		$cookie = $this->login($xh,$pwd);
+		$url = "http://jwxt.zust.edu.cn/xsdjkscx.aspx?xh=".$xh;
+		$post['ddlXN'] = '';
+		$post['ddlXQ'] = '';
+		$result = $this->curl_request($url,$post,$cookie);
+		// $result = iconv('gbk', 'utf-8', $result);
+//		 print_r($result);
+//		echo '<pre>';
+		$tmp="/<tr.*>(.*)<\/tr>/iUs";
+		preg_match_all($tmp,$result,$macthes);
+
+		$tmp="/<td.*>(.*)<\/td>/iUs";
+		foreach($macthes[1] as $tr)
+		{
+			preg_match_all($tmp,$tr,$td);
+			unset($td[1][3]);//去除准考证号
+			$td[1][3]=$xh;
+			$djks[]=$td[1];
+		}
+//		$datelist = strstr($code, '',true);
+		/**
+		 *     [0] => Array
+		(
+		[0] => 学年
+		[1] => 学期
+		[2] => 等级考试名称
+		[3] => 准考证号 1
+		[4] => 考试日期
+		[5] => 成绩
+		[6] => 听力成绩
+		[7] => 阅读成绩
+		[8] => 写作成绩
+		[9] => 综合成绩
+		)
+
+		[1] => Array
+		(
+		[0] => 2013-2014
+		[1] => 2
+		[2] => 计算机二级
+		[3] => 141531121103311
+		[4] => 2014-4-26
+		[5] => 77.00
+		[6] =>
+		[7] =>
+		[8] =>
+		[9] =>
+		)
+
+		 */
+		unset($djks[0]);
+		return $djks;
 	}
 
+
+	private function chengji($xh,$pwd){
+		$cookie = $this->login($xh,$pwd);
+		$url = "http://jwxt.zust.edu.cn/xscj_gc.aspx?xh=".$xh;
+		$post['ddlXN'] = '';
+		$post['ddlXQ'] = '';
+		$post['Button2'] = '在校学习成绩查询';
+		$post['__VIEWSTATE'] = $this->getViewchengji($xh,$pwd);
+
+		$result = $this->curl_request($url,$post,$cookie);
+		// $result = iconv('gbk', 'utf-8', $result);
+//		 print_r($result);
+//		echo '<pre>';
+		$code = str_replace("\n",'',$result) ;
+		preg_match_all("/(?<=<span id=\"pjxfjd\"><b>)平均学分绩点：(.*?)(?=<\/b><\/span>)/is",$code,$pjxfjd);//平均学分绩点
+//		echo $pjxfjd[1][0].'<br/>';//输出平均学分绩点
+		$datelist = strstr($code, '<table id="TabTj" width="100%">',true);
+//		preg_match("/<tr.*?<\/tr>/iUs",$code,$newcode);
+//		print_r($datelist);
+/*
+		[0] => 学年
+    [1] => 学期
+    [2] => 课程代码 1 =>学号
+    [3] => 课程名称
+    [4] => 课程性质
+    [5] => 课程归属 1
+    [6] => 学分
+    [7] => 绩点
+    [8] => 成绩
+    [9] => 辅修标记
+    [10] => 补考成绩
+    [11] => 重修成绩
+    [12] => 学院名称
+    [13] => 重修标记
+
+		[0] => 2013-2014
+    [1] => 1
+    [2] => 02113020
+    [3] => C语言程序设计
+    [4] => 必修课
+    [5] =>
+    [6] => 4.0
+    [7] => 4.1
+    [8] => 91
+    [9] => 0
+    [10] =>
+    [11] =>
+    [12] => 信息与电子工程学院
+    [13] => 0
+
+ */
+		$tmp="/<tr.*>(.*)<\/tr>/iUs";
+		preg_match_all($tmp,$datelist,$macthes);
+
+		$tmp="/<td.*>(.*)<\/td>/iUs";
+		foreach($macthes[1] as $tr)
+		{
+			preg_match_all($tmp,$tr,$td);
+//			unset($td[1][2]);//去除课程代码
+			$td[1][2]=$xh;
+			unset($td[1][5]);//去除课程归属
+			switch($td[1][8]){
+				case '优秀':$td[1][8]=95;break;//五级制转化为百分制
+				case '良好':$td[1][8]=85;break;
+				case '中等':$td[1][8]=75;break;
+				case '及格':$td[1][8]=65;break;
+				case '不及格':$td[1][8]=0;break;
+				case '合格':$td[1][8]=85;break;//二级制转化为百分制
+				default:break;
+			}
+			$score[]=$td[1];
+		}
+		unset($score[0]);
+//		print_r($score);
+
+//		echo '<table><tr><td>学年</td><td>学期</td><td>课程名称</td><td>课程性质</td><td>学分</td><td>绩点</td><td>成绩</td><td>辅修标记</td><td>补考成绩</td><td>重修成绩</td><td>学院名称</td><td>重修标记</td></tr>';
+//		foreach($score as $k){
+//			echo '<tr>';
+//			foreach($k as $v){
+//				echo '<td>'.$v.'</td>';
+//			}
+//			echo '</tr>';
+//		}
+//		echo '</table>';
+		return $score;
+	}
+
+public function preg(){
+	$before='<tr>
+		<td height="13"><span id="zyzrs"><b>本专业共134人</b></span></td>
+		<td height="13"><span id="pjxfjd"><b>平均学分绩点：3.73</b></span></td>
+		<td height="13"><span id="xfjdzh"><b>学分绩点总和：452.80</b></span></td>
+		<td height="13"><span id="zmc" designtimedragdrop="188"><b></b></span><font face="宋体">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="xfcj"><b></b></span></td>
+	</tr>';
+	$code = str_replace("\n",'',$before) ;
+	preg_match_all("/(?<=<span id=\"pjxfjd\"><b>)平均学分绩点：(.*?)(?=<\/b><\/span>)/is",$code,$pjxfjd);//平均学分绩点
+	print_r($pjxfjd) ;
+}
 	public function mainpage(){
 		$cookie = $this->login();
 	     $url = 'http://jwxt.zust.edu.cn/xs_main.aspx?xh=1130320108';
@@ -189,37 +458,7 @@ class Jw extends Base_Controller {
 
 			print_r($td);
 	}
-	public function chengji(){
-		$cookie = $this->login();
-		$url = "http://jwxt.zust.edu.cn/xscj_gc.aspx?xh=1130320108";
-		$post['ddlXN'] = '';
-		$post['ddlXQ'] = '';
-		$post['Button2'] = '在校学习成绩查询';
-		$post['__VIEWSTATE'] = $this->getViewchengji();
 
-		$result = $this->curl_request($url,$post,$cookie);
-		// $result = iconv('gbk', 'utf-8', $result);
-		// print_r($result);
-		$code = str_replace("\n",'',$result) ;
-		$code = strstr($code, '<table id="TabTj" width="100%">',true);
-//		preg_match("/<tr.*?<\/tr>/iUs",$code,$newcode);
-//		print_r($newcode);
-
-		$tmp="/<tr.*>(.*)<\/tr>/iUs";
-		preg_match_all($tmp,$code,$macthes);
-
-		$tmp="/<td.*>(.*)<\/td>/iUs";
-		$arr=Array();
-		foreach($macthes[1] as $tr)
-		{
-		preg_match_all($tmp,$tr,$td);
-		$arr[]=$td[1];
-		}
-
-			echo '<pre>';
-//		print_r($macthes);
-			print_r($arr);
-	}
   public function roomsearch(){
     $xh = "1130320108"; //设置学号
 	$pwd = "woshidiandian";  //学号对应的密码

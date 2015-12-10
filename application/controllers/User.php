@@ -30,7 +30,17 @@ class User extends Login_Controller {
 		$this->load->view('siderbar',$this->page_data);
 		$this->load->view('public/profile',$this->page_data);
 	}
-	public function l(){
+	public function score(){
+		$this->page_data['scoreinfo']=$this->User_score_model->select(array('student_id'=>$this->student_id));
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('public/user_score',$this->page_data);
 //		$this->check_member();
+	}
+	public function ranktest(){
+		$this->page_data['scoreinfo']=$this->User_ranktest_model->select(array('student_id'=>$this->student_id));
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('public/user_ranktest',$this->page_data);
 	}
 }
