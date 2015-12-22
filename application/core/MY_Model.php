@@ -236,7 +236,10 @@ class Base_Model extends MY_Model{
 		$this->db->insert($this->table_name, $data);
 		if($return_insert_id)return $this->db->insert_id();
 	}
-
+	final public function set_insert($array) {
+		$this->db->set($array);
+		$this->db->insert($this->table_name);
+	}
 	final public function insert_batch($data)
 	{
 		return $this->db->insert_batch($this->table_name, $data);

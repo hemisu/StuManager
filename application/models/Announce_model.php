@@ -20,8 +20,8 @@ class Announce_model extends Base_Model {
 			$html.='<div id="collapse'.$key.'" class="panel-collapse collapse ';
 			if(!$key)$html.='in';
 			$html.='">';
-			$html.='<div class="box-body">';
-			$html.=$val['content'];
+			$html.='<div class="box-body announcecontent" data-announceid="'.$val['id'].'">';
+			$html.= $val['content'];
 			$html.='</div></div></div>';
 		}
 		return $html;
@@ -41,6 +41,11 @@ class Announce_model extends Base_Model {
 			$html .= '<a href="javascript:if(confirm(\'确定要删除吗\'))window.location.href=\''.base_url('admin/announce').'_delete/announce_id/'.$val['id'].'\';" class="btn btn-white btn-sm"><span class="glyphicon glyphicon-edit"></span> 删除</a></td>';
 		}
 		return $html;
+	}
+	public function announce_one($announce_id)
+	{
+		$announce = $this->get_one("`id`=$announce_id");
+		return $announce;
 	}
 
 }

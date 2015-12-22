@@ -20,7 +20,24 @@ class Base_Controller extends MY_Controller
 		$this->load->helper('url');
 		$this->load->library('tree','session');
 	}
+	/**
+	 * 错误信息显示
+	 * @param $msg
+	 * @param string $url_next
+	 * @param string $url_forward
+	 * @param int $s
+	 * @param string $dialog
+	 */
+	protected function showmessage($msg, $next_url = '',$s = 2, $dialog = '') {
 
+		if($next_url=='')$next_url=$_SERVER['HTTP_REFERER'];//获取当前链接的上一个连接的来源地址
+
+		$pagedata = array("msg"=>$msg,"next_url"=>$next_url,"s"=>$s,"dialog"=>$dialog);
+
+		echo $this->load->view('errors/html/error_message',$pagedata,true);
+
+		exit;
+	}
 }
 class Login_Controller extends MY_Controller
 {

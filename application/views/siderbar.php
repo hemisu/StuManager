@@ -16,7 +16,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<!-- Sidebar user panel -->
 		<div class="user-panel">
 			<div class="pull-left image">
-				<img src="<?echo base_url('/public/AdminLTE2/dist/img')?>/user9-400x400.jpg" class="img-circle" alt="User Image">
+				<img src="<?echo base_url('/public/avatar').'/'.$userinfo['avatar'];?>" class="img-circle" alt="User Image">
 			</div>
 			<div class="pull-left info">
 				<p><?echo isset($userinfo['username']) ? $userinfo['username']: "Data Error:@param:userinfo";?></p>
@@ -24,14 +24,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			</div>
 		</div>
 		<!-- search form -->
-		<form action="#" method="get" class="sidebar-form">
-			<div class="input-group">
-				<input type="text" name="q" class="form-control" placeholder="Search...暂时无法使用">
-              <span class="input-group-btn">
-                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>
-              </span>
-			</div>
-		</form>
+<!--		<form action="#" method="get" class="sidebar-form">-->
+<!--			<div class="input-group">-->
+<!--				<input type="text" name="q" class="form-control" placeholder="Search...暂时无法使用">-->
+<!--              <span class="input-group-btn">-->
+<!--                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i></button>-->
+<!--              </span>-->
+<!--			</div>-->
+<!--		</form>-->
 		<!-- /.search form -->
 		<!-- sidebar menu: : style can be found in sidebar.less -->
 		<?echo $sider_ul_list;?>

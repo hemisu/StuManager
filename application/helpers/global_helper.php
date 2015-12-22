@@ -12,7 +12,6 @@ if ( ! function_exists('new_addslashes'))
 		return $string;
 	}
 }
-
 if( ! function_exists('is_ie'))
 {
 	function is_ie()

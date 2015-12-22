@@ -7,10 +7,31 @@ class User_model extends Base_Model {
 		parent::__construct();
 	}
 	
-	function check_username_exists($username)
+	function check_student_exists($student_id)
 	{
-		$c = $this->count("username ='".$username."' or email = '".$username."'");
+		$c = $this->count("`student_id` ='".$student_id."'");
 		return $c;
+	}
+	function check_student_id($student_id)
+	{
+		$c = $this->count("`student_id` ='".$student_id."'");
+		if($c){return true;}
+		else{return false;}
+	}
+	function check_password($student_id,$password){
+		$r = $this->User_model->get_one("`student_id`=$student_id");
+		$password = md5($password.$r['salt']);
+		if($r['password']==$password){
+			$isAvailable = true;
+		}else{
+			$isAvailable = false;
+		}
+		return $isAvailable;
+	}
+	function salt_password($student_id,$password){
+		$r = $this->User_model->get_one("`student_id`=$student_id");
+		$password = md5($password.$r['salt']);
+		return $password;
 	}
 	
 	function quick_register($username,$password,$encrypt='',$mobileno='')

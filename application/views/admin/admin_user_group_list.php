@@ -22,16 +22,18 @@
 					</div>
 				</div><!-- /.box-header -->
 				<div class="box-body no-padding">
-					<table class="table table-striped">
-						<tr>
-							<th style="width: 40px;">#</th>
-							<th>用户组ID</th>
-							<th>用户组名</th>
-							<th>介绍</th>
-							<th>操作</th>
-						</tr>
-						<?echo ($group_list_html);?>
-					</table>
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<tr>
+								<th style="width: 40px;">#</th>
+								<th>用户组ID</th>
+								<th>用户组名</th>
+								<th>介绍</th>
+								<th>操作</th>
+							</tr>
+							<?echo ($group_list_html);?>
+						</table>
+					</div>
 				</div><!-- /.box-body -->
 				<div class="box-footer clearfix">
 				</div><!-- /.box-booter -->

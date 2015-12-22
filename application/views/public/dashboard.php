@@ -9,7 +9,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <section class="content">
 <!-- Info boxes -->
 <div class="row">
-	<div class="col-md-9 col-sm-9 col-xs-12">
+	<div class="col-md-9 col-sm-12 col-xs-12">
 		<!-- Newlist -->
 		<div class="box">
 			<div class="box-header with-border">
@@ -137,11 +137,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div><!-- /.box -->
 
 	</div><!-- /.col -->
-	<div class="col-md-3 col-sm-3 col-xs-12">
+	<div class="col-md-3 hidden-xs hidden-sm">
 		<!-- Userinfo -->
 		<div class="box box-primary">
 			<div class="box-body box-profile">
-				<img class="profile-user-img img-responsive img-circle" src="<?echo base_url('/public/AdminLTE2/dist/img')?>/user9-400x400.jpg" alt="User profile picture">
+				<img class="profile-user-img img-responsive img-circle" src="<?echo base_url('/public/avatar').'/'.$userinfo['avatar'];?>" alt="User profile picture">
 				<h3 class="profile-username text-center"><?echo isset($userinfo['username']) ? $userinfo['username']: "Data Error:@param:userinfo";?></h3>
 				<p class="text-muted text-center">Web Developer</p>
 
@@ -157,7 +157,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					</li>
 				</ul>
 
-				<a href="#" class="btn btn-primary btn-block"><b>修改资料</b></a>
+				<a href="<?echo base_url('user/profile#settings')?>" class="btn btn-primary btn-block"><b>修改资料</b></a>
 			</div><!-- /.box-body -->
 		</div><!-- /.box -->
 		<!-- About Me Box -->
@@ -173,7 +173,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				<hr>
 
-				<strong><i class="fa fa-envelope margin-r-5"></i>  Mail</strong>
+				<strong><i class="fa fa-envelope margin-r-5"></i>  Mail（未验证）</strong>
 				<p class="text-muted">
 					<?echo isset($userinfo['email']) ? $userinfo['email']: "Data Error:@param:userinfo";?>
 				</p>
@@ -251,6 +251,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/pages/dashboard2.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/demo.js"></script>
-
+<script>
+	$(function () {
+		$(".announcecontent").each(function () {
+			var maxwidth = 400;
+			if ($(this).text().length > maxwidth) {
+				var myid= $(this).data('announceid'); console.log(myid);
+				$(this).html($(this).html().substring(0, maxwidth));
+				$(this).html($(this).html() + "<a href='<?echo base_url('dashboard/announce/announce_id');?>"+"/"+myid+"' >查看更多</a>");
+			}
+		});
+	});
+</script>
 </body>
 </html>

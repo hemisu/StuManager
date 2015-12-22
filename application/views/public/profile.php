@@ -14,71 +14,96 @@
 <section class="content">
 
 <div class="row">
-<div class="col-md-3">
+<div class="col-md-3 hidden-xs">
 
 	<!-- Profile Image -->
 	<div class="box box-primary">
 		<div class="box-body box-profile">
-			<img class="profile-user-img img-responsive img-circle" src="<?echo base_url('/public/AdminLTE2/dist/img')?>/user4-128x128.jpg" alt="User profile picture">
-			<h3 class="profile-username text-center">Nina Mcintire</h3>
-			<p class="text-muted text-center">Software Engineer</p>
+			<img class="profile-user-img img-responsive img-circle" src="<?echo base_url('/public/avatar').'/'.$userinfo['avatar'];?>" alt="User profile picture">
+			<h3 class="profile-username text-center"><?echo isset($userinfo['username']) ? $userinfo['username']: "Data Error:@param:userinfo";?></h3>
+			<p class="text-muted text-center">Web Developer</p>
 
 			<ul class="list-group list-group-unbordered">
 				<li class="list-group-item">
-					<b>Followers</b> <a class="pull-right">1,322</a>
+					<b>学号</b> <a class="pull-right"><?echo isset($userinfo['student_id']) ? $userinfo['student_id']: "Data Error:@param:userinfo";?></a>
 				</li>
 				<li class="list-group-item">
-					<b>Following</b> <a class="pull-right">543</a>
+					<b>学院</b> <a class="pull-right"><?echo isset($userinfo['college']) ? $userinfo['college']: "Data Error:@param:userinfo";?></a>
 				</li>
 				<li class="list-group-item">
-					<b>Friends</b> <a class="pull-right">13,287</a>
+					<b>班级</b> <a class="pull-right"><?echo isset($userinfo['classes']) ? $userinfo['classes']: "Data Error:@param:userinfo";?></a>
+				</li>
+				<li class="list-group-item">
+					<b>关注</b> <a class="pull-right">1,322</a>
+				</li>
+				<li class="list-group-item">
+					<b>被关注</b> <a class="pull-right">543</a>
+				</li>
+				<li class="list-group-item">
+					<b>好友</b> <a class="pull-right">13,287</a>
 				</li>
 			</ul>
-
-			<a href="#" class="btn btn-primary btn-block"><b>Follow</b></a>
 		</div><!-- /.box-body -->
 	</div><!-- /.box -->
 
 	<!-- About Me Box -->
 	<div class="box box-primary">
 		<div class="box-header with-border">
-			<h3 class="box-title">About Me</h3>
+			<h3 class="box-title">详细信息</h3>
 		</div><!-- /.box-header -->
 		<div class="box-body">
-			<strong><i class="fa fa-book margin-r-5"></i>  Education</strong>
+			<strong><i class="fa fa-qq margin-r-5"></i>  QQ</strong>
 			<p class="text-muted">
-				B.S. in Computer Science from the University of Tennessee at Knoxville
+				<?echo isset($userinfo['qq']) ? $userinfo['qq']: "Data Error:@param:userinfo";?>
 			</p>
 
 			<hr>
 
-			<strong><i class="fa fa-map-marker margin-r-5"></i> Location</strong>
-			<p class="text-muted">Malibu, California</p>
+			<strong><i class="fa fa-envelope margin-r-5"></i>  Mail（未验证）</strong>
+			<p class="text-muted">
+				<?echo isset($userinfo['email']) ? $userinfo['email']: "Data Error:@param:userinfo";?>
+			</p>
 
 			<hr>
 
-			<strong><i class="fa fa-pencil margin-r-5"></i> Skills</strong>
+			<strong><i class="fa fa-phone margin-r-5"></i>  短号</strong>
+			<p class="text-muted">
+				<?echo isset($userinfo['short_phone']) ? $userinfo['short_phone']: "Data Error:@param:userinfo";?>
+			</p>
+
+			<hr>
+
+			<strong><i class="fa fa-mobile-phone margin-r-5"></i>  长号</strong>
+			<p class="text-muted">
+				<?echo isset($userinfo['long_phone']) ? $userinfo['long_phone']: "Data Error:@param:userinfo";?>
+			</p>
+
+			<hr>
+
+			<strong><i class="fa fa-map-marker margin-r-5"></i> 寝室</strong>
+			<p class="text-muted"><?echo isset($userinfo['qinshi']) ? $userinfo['qinshi']: "Data Error:@param:userinfo";?></p>
+
+			<hr>
+
+			<strong><i class="fa fa-pencil margin-r-5"></i> 状态</strong>
 			<p>
-				<span class="label label-danger">UI Design</span>
-				<span class="label label-success">Coding</span>
-				<span class="label label-info">Javascript</span>
-				<span class="label label-warning">PHP</span>
-				<span class="label label-primary">Node.js</span>
+				<span class="label label-success"><?echo isset($userinfo['status']) ? $userinfo['status']: "Data Error:@param:userinfo";?></span>
 			</p>
 
 			<hr>
 
-			<strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
-			<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p>
+			<strong><i class="fa fa-file-text-o margin-r-5"></i> 简介</strong>
+			<p><?echo isset($userinfo['remarks']) ? (empty($userinfo['remarks'])?"这个人很懒，什么都没说。":$userinfo['remarks']): "Data Error:@param:userinfo";?></p>
 		</div><!-- /.box-body -->
 	</div><!-- /.box -->
 </div><!-- /.col -->
-<div class="col-md-9">
+<div class="col-md-9 col-xs-12">
 <div class="nav-tabs-custom">
 <ul class="nav nav-tabs">
-	<li class="active"><a href="#activity" data-toggle="tab">Activity</a></li>
-	<li><a href="#timeline" data-toggle="tab">Timeline</a></li>
-	<li><a href="#settings" data-toggle="tab">Settings</a></li>
+	<li class="active"><a href="#activity" data-toggle="tab">动态</a></li>
+	<li><a href="#timeline" data-toggle="tab">时间轴</a></li>
+	<li><a href="#settings" data-toggle="tab" id="settingbtn">修改个人资料</a></li>
+	<li><a href="#password" data-toggle="tab" id="passwordbtn">修改密码</a></li>
 </ul>
 <div class="tab-content">
 <div class="active tab-pane" id="activity">
@@ -246,10 +271,10 @@
 				<span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
 				<h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
 				<div class="timeline-body">
-					<img src="http://placehold.it/150x100" alt="..." class="margin">
-					<img src="http://placehold.it/150x100" alt="..." class="margin">
-					<img src="http://placehold.it/150x100" alt="..." class="margin">
-					<img src="http://placehold.it/150x100" alt="..." class="margin">
+					<img src="<?echo base_url('/public/AdminLTE2/dist/img')?>/photo4.jpg" width="150" alt="..." class="margin">
+					<img src="<?echo base_url('/public/AdminLTE2/dist/img')?>/photo4.jpg" width="150" alt="..." class="margin">
+					<img src="<?echo base_url('/public/AdminLTE2/dist/img')?>/photo4.jpg" width="150" alt="..." class="margin">
+					<img src="<?echo base_url('/public/AdminLTE2/dist/img')?>/photo4.jpg" width="150" alt="..." class="margin">
 				</div>
 			</div>
 		</li>
@@ -259,51 +284,98 @@
 		</li>
 	</ul>
 </div><!-- /.tab-pane -->
-
 <div class="tab-pane" id="settings">
-	<form class="form-horizontal">
-		<div class="form-group">
-			<label for="inputName" class="col-sm-2 control-label">Name</label>
-			<div class="col-sm-10">
-				<input type="email" class="form-control" id="inputName" placeholder="Name">
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="inputEmail" class="col-sm-2 control-label">Email</label>
-			<div class="col-sm-10">
-				<input type="email" class="form-control" id="inputEmail" placeholder="Email">
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="inputName" class="col-sm-2 control-label">Name</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="inputName" placeholder="Name">
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="inputExperience" class="col-sm-2 control-label">Experience</label>
-			<div class="col-sm-10">
-				<textarea class="form-control" id="inputExperience" placeholder="Experience"></textarea>
-			</div>
-		</div>
-		<div class="form-group">
-			<label for="inputSkills" class="col-sm-2 control-label">Skills</label>
-			<div class="col-sm-10">
-				<input type="text" class="form-control" id="inputSkills" placeholder="Skills">
-			</div>
-		</div>
+	<form id="userinfopost" class="form-horizontal" action="<?echo current_url();?>" method="post">
+		<?//跨站请求伪造
+		$csrf = array(
+			'name' => $this->security->get_csrf_token_name(),
+			'hash' => $this->security->get_csrf_hash()
+		);
+		?>
+
+		<?
+		$structrue = array(
+			array('name'=>'sex','type'=>'radio','value'=>$userinfo['sex'],'labelname'=>'性别','option'=>array('0'=>'女','1'=>'男')),
+			array('name'=>'email','type'=>'email','value'=>$userinfo['email'],'labelname'=>'邮箱'),
+			array('name'=>'qq','type'=>'text','value'=>$userinfo['qq'],'labelname'=>'qq'),
+			array('name'=>'long_phone','type'=>'text','value'=>$userinfo['long_phone'],'labelname'=>'长号'),
+			array('name'=>'short_phone','type'=>'text','value'=>$userinfo['short_phone'],'labelname'=>'短号'),
+			array('name'=>'mz','type'=>'text','value'=>$userinfo['mz'],'labelname'=>'民族'),
+			array('name'=>'jg','type'=>'text','value'=>$userinfo['jg'],'labelname'=>'籍贯'),
+			array('name'=>'fa_name','type'=>'text','value'=>$userinfo['fa_name'],'labelname'=>'父亲姓名'),
+			array('name'=>'fa_phone','type'=>'text','value'=>$userinfo['fa_phone'],'labelname'=>'父亲电话'),
+			array('name'=>'mo_name','type'=>'text','value'=>$userinfo['mo_name'],'labelname'=>'母亲姓名'),
+			array('name'=>'mo_phone','type'=>'text','value'=>$userinfo['mo_phone'],'labelname'=>'母亲电话'),
+			array('name'=>'ybh','type'=>'text','value'=>$userinfo['ybh'],'labelname'=>'邮编号'),
+			array('name'=>'homephone','type'=>'text','value'=>$userinfo['homephone'],'labelname'=>'家庭电话'),
+			array('name'=>'address','type'=>'text','value'=>$userinfo['address'],'labelname'=>'家庭地址','readonly'=>1),
+			array('name'=>'qinshi','type'=>'text','value'=>$userinfo['qinshi'],'labelname'=>'寝室','readonly'=>1),
+			array('name'=>'remarks','type'=>'textarea','value'=>$userinfo['remarks'],'labelname'=>'个人简介'),
+
+		);
+		foreach($structrue as $v){
+			if($v['type']=='textarea'){
+				echo '<div class="form-group">';
+				echo '	<label for="input'.$v['name'].'" class="col-sm-2 control-label">'.$v['labelname'].'</label>';
+				echo '	<div class="col-sm-10">';
+				echo '<textarea class="form-control" rows="3" id="input'.$v['name'].'" name="'.$v['name'].'">'.$v['value'].'</textarea>';
+				echo '	</div>';
+				echo '</div>';
+			}elseif($v['type']=='radio'){
+				echo '<div class="form-group">';
+				echo '	<label class="col-sm-2 control-label">'.$v['labelname'].'</label>';
+				echo '<div class="col-sm-10 "><div class="btn-group" data-toggle="buttons">';
+					foreach($v['option'] as $k=>$w){
+						echo '    <label class="btn btn-default';
+						if($v['value']==$k)echo ' active';
+						echo '">';
+            echo '      <input type="radio" id="options'.$v['name'].'" name="'.$v['name'].'" value="'.$k.'"';
+						if($v['value']==$k)echo ' checked="checked"';
+						echo '>'.$w;
+            echo '    </label>';
+					}
+				echo '</div></div></div>';
+			}else{
+				echo '<div class="form-group">';
+				echo '	<label for="input'.$v['name'].'" class="col-sm-2 control-label">'.$v['labelname'].'</label>';
+				echo '	<div class="col-sm-10">';
+				echo '		<input type="'.$v['type'].'" class="form-control" id="input'.$v['name'].'" name="'.$v['name'].'" value="'.$v['value'].'" ';
+				if(isset($v['readonly']))echo 'readonly';
+				echo '>';
+				echo '	</div>';
+				echo '</div>';
+			}
+		}
+		?>
+		<input type="hidden" name="<?=$csrf['name'];?>" value="<?=$csrf['hash'];?>" />
 		<div class="form-group">
 			<div class="col-sm-offset-2 col-sm-10">
-				<div class="checkbox">
-					<label>
-						<input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
-					</label>
-				</div>
+				<button type="submit" class="btn btn-primary" onclick="{if(confirm('确定修改?')){return true;}return false;}">提交</button>
 			</div>
 		</div>
+	</form>
+</div><!-- /.tab-pane -->
+<div class="tab-pane" id="password">
+	<form id="postpassword" class="form-horizontal" action="<?echo current_url();?>" method="post">
+		<?
+		$structrue = array(
+			array('name'=>'password','type'=>'password','value'=>'','labelname'=>'原密码'),
+			array('name'=>'newpassword','type'=>'password','value'=>'','labelname'=>'新密码'),
+			array('name'=>'confirmPassword','type'=>'password','value'=>'','labelname'=>'重复新密码'),
+		);
+		foreach($structrue as $v){
+			echo '<div class="form-group">';
+			echo '	<label for="input'.$v['name'].'" class="col-sm-2 control-label">'.$v['labelname'].'</label>';
+			echo '	<div class="col-sm-10">';
+			echo '		<input type="'.$v['type'].'" class="form-control" id="input'.$v['name'].'" name="'.$v['name'].'" value="'.$v['value'].'">';
+			echo '	</div>';
+			echo '</div>';
+		}
+		?>
+		<input type="hidden" name="<?=$csrf['name'];?>" value="<?=$csrf['hash'];?>" />
 		<div class="form-group">
 			<div class="col-sm-offset-2 col-sm-10">
-				<button type="submit" class="btn btn-danger">Submit</button>
+				<button type="submit" class="btn btn-danger" onclick="{if(confirm('确定修改?')){return true;}return false;}">提交</button>
 			</div>
 		</div>
 	</form>
@@ -344,6 +416,19 @@
 <script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/pages/dashboard2.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/demo.js"></script>
-
+<!-- bootstrapValidator -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-validator/js/bootstrapValidator.min.js"></script>
+<!-- sco.message -->
+<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
+<!-- control -->
+<script src="<?php echo base_url();?>public/js/<?php echo $controller_name.'_'.$method_name;?>.js"></script>
+<script>
+	$(document).ready(function() {
+		if(window.location.hash == "#settings"){
+			$('#settingbtn').trigger("click");
+		}
+		SITE_URL = '<?echo base_url();?>';
+	});
+</script>
 </body>
 </html>

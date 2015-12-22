@@ -14,7 +14,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<link href="../favicon.png" rel="icon" type="image/x-icon" />
+	<link href="<?php echo base_url('/favicon.png');?>" rel="icon" type="image/x-icon" />
 	<title><?echo $pageheaderinfo[0][0];?> - 学生管理系统 Stumanager</title>
 	<!-- Tell the browser to be responsive to screen width -->
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -50,6 +50,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<![endif]-->
 	<!-- 调试 -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/stu.css');?>">
+	<style>
+	</style>
 </head>
 
 <body class="hold-transition skin-blue sidebar-mini">
@@ -264,7 +266,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <!-- User Account: style can be found in dropdown.less -->
 <li class="dropdown user user-menu">
 	<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-		<img src="<?echo base_url('/public/AdminLTE2/dist/img')?>/user9-400x400.jpg" class="user-image" alt="User Image">
+		<img src="<?echo base_url('/public/avatar').'/'.$userinfo['avatar'];?>" class="user-image" alt="User Image">
 		<span class="hidden-xs"><?echo isset($userinfo['username']) ? $userinfo['username']: "Data Error:@param:userinfo";?></span>
 	</a>
 	<ul class="dropdown-menu">

@@ -26,6 +26,26 @@ class User extends Login_Controller {
 
 	}
 	public function profile(){
+		if($this->input->is_ajax_request()){
+			$data=$this->input->post();
+//			print_r($data);
+			if(isset($data['newpassword'])){//修改密码
+				if($this->User_model->check_password($this->student_id,$data['password'])){
+					$updateinfo['password']= $this->User_model->salt_password($this->student_id,$data['newpassword']);
+					$this->User_model->update($updateinfo,"`student_id`=$this->student_id");
+					exit(json_encode(array('next_url'=> base_url('login/loginout'))));
+				}else{
+					exit(json_encode(array('response'=>false,'next_url'=> base_url('user/profile'))));
+				}
+			}else{
+				if($this->User_model->update($data,"`student_id`=$this->student_id")){
+					exit(json_encode(array('next_url'=>base_url('user/profile'))));
+				}else{
+					exit(json_encode(array('response'=>false,'next_url'=> base_url('user/profile')))) ;
+				}
+
+			}
+		}
 		$this->load->view('head',$this->page_data);
 		$this->load->view('siderbar',$this->page_data);
 		$this->load->view('public/profile',$this->page_data);
@@ -42,5 +62,11 @@ class User extends Login_Controller {
 		$this->load->view('head',$this->page_data);
 		$this->load->view('siderbar',$this->page_data);
 		$this->load->view('public/user_ranktest',$this->page_data);
+	}
+	public function check_password(){
+		if(!$this->input->is_ajax_request()) exit('what are you 弄撒嘞?');
+		$password = $this->input->post('password');
+		echo json_encode(array('valid' => $this->User_model->check_password($this->student_id,$password)));
+
 	}
 }

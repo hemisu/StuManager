@@ -434,7 +434,8 @@ $config['csrf_regenerate'] = TRUE;
 $config['csrf_exclude_uris'] = array(
 	'admin/announce_delete',
 	'jw/binding',
-	'login/login'
+	'login/login',
+	'user/check_password'
 );
 
 /*

@@ -192,10 +192,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				// Use Ajax to submit form data
 				$.post($form.attr('action'), $form.serialize(), function (result) {
-					if (result.response === 'error') {
+					if (result.response == false) {
 
-						$.scojs_message('用户名或者密码错误', $.scojs_message.TYPE_ERROR);
-						$('#bindingForm').data('formValidation').resetForm();
+						$.scojs_message(result.recontent, $.scojs_message.TYPE_ERROR);
+//						$('#bindingForm').data('formValidation').resetForm();
+						$.GoUrl(result.next_url, 2);
 
 					} else {
 						console.log(result);

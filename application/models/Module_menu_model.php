@@ -19,12 +19,12 @@ class Module_menu_model extends Base_Model {
 				if($v['is_parent']){//是父元素
 					if(empty($v['arr_childid'])){//父元素但无子元素 => 单独显示，无下拉菜单
 						$html.= '<li class="';
-						if(trim($this->router->class)==$v['controller'] && trim($this->router->method)==$v['method'])$html.='active';
+						if(trim($this->router->class)==$v['controller'] && trim($this->router->method)==$v['method'])$html.=' active';
 						$html.=	'"><a href="'.base_url('').$v['controller'].'/'.$v['method'].'">';
 						$html.= '<i class="fa '.$v['css_icon'].'"></i><span>'.$v['menu_name'].'</span>';//显示css_icon和栏目名
 					}else{//父元素有子元素 => 下拉菜单样式
-						$html.= '<li class="treeview';
-						$html.='active';
+						$html.= '<li class="treeview ';
+						if(trim($this->router->class)==$v['controller']  && trim($this->router->method)==$v['method'])$html.=' active';
 						$html.= '"><a href="#">';
 						$html.= '<i class="fa '.$v['css_icon'].'"></i><span>'.$v['menu_name'].'</span>';//显示css_icon和栏目名
 						$html.= '<i class="fa fa-angle-left pull-right"></i></a>';
@@ -68,8 +68,9 @@ class Module_menu_model extends Base_Model {
 					}
 
 					if(empty($childinfo['arr_childid']) || !$childinfo['child_display']){//无子元素|子集不显示 => 单独显示，无下拉菜单
-						$html.= '<li class="active">';
-						$html.= '<a href="'.base_url().$childinfo['controller'].'/'.$childinfo['method'].'">';
+						$html.= '<li class=" ';
+						if(trim($this->router->class)==$childinfo['controller'] && trim($this->router->method)==$childinfo['method'])           $html.='active';
+						$html.= '">'.'<a href="'.base_url().$childinfo['controller'].'/'.$childinfo['method'].'">';
 						$html.= '<i class="fa '.$childinfo['css_icon'].'"></i><span>'.$childinfo['menu_name'].'</span></a>';//显示css_icon和栏目名
 					}else{//有子元素 => 下拉菜单样式
 						$html.='<li class="treeview"><a href="#">';
@@ -190,27 +191,29 @@ class Module_menu_model extends Base_Model {
 	public function get_current_page_info(){
 		$page_data['controller']= trim($this->router->class);
 		$page_data['method']= trim($this->router->method);
-		$current_pageinfo=$this->select($page_data);
-		$current_pageinfo=array_shift($current_pageinfo);
-		$arr='';
-		$arr.=$current_pageinfo['menu_name'].',';
-		$arr.=$current_pageinfo['description'].',';
-		$arr.=$current_pageinfo['controller'].',';
-		$arr.=$current_pageinfo['method'].',';
-		$arr.=$current_pageinfo['parent_id'];
-		//检测父ID是否为本身
-		if($current_pageinfo['parent_id']==$current_pageinfo['menu_id']){
+		$current_pageinfo=$this->get_one($page_data);
+		if(!empty($current_pageinfo)){//模块未录入时不加载
+			$arr='';
+			$arr.=$current_pageinfo['menu_name'].',';
+			$arr.=$current_pageinfo['description'].',';
+			$arr.=$current_pageinfo['controller'].',';
+			$arr.=$current_pageinfo['method'].',';
+			$arr.=$current_pageinfo['parent_id'];
+			//检测父ID是否为本身
+			if($current_pageinfo['parent_id']==$current_pageinfo['menu_id']){
 
-		}else {
-			$arr.=$this->get_current_page_info_child($current_pageinfo);
+			}else {
+				$arr.=$this->get_current_page_info_child($current_pageinfo);
+			}
+
+			$newarr = explode('|', $arr);
+			foreach ($newarr as $v) {
+				$arr_pageinfo[] = explode(',', $v);
+			}
+
+			return $arr_pageinfo;
 		}
 
-		$newarr = explode('|', $arr);
-		foreach ($newarr as $v) {
-			$arr_pageinfo[] = explode(',', $v);
-		}
-
-		return $arr_pageinfo;
 
 	}
 	/**
@@ -230,7 +233,11 @@ class Module_menu_model extends Base_Model {
 					$arr .= $v['controller'] . ',';
 					$arr .= $v['method'] . ',';
 					$arr .= $v['parent_id'];
-					$arr .= $this->get_current_page_info_child($v);
+					if($v['parent_id']==$v['menu_id']){
+
+					}else {
+						$arr.=$this->get_current_page_info_child($v);
+					}
 
 				}
 			}
@@ -242,27 +249,29 @@ class Module_menu_model extends Base_Model {
 	 */
 	public function get_page_header_html(){
 		$current_page_info=$this->get_current_page_info();
-		$html = '';
-		$html .= '<section class="content-header">';
-		$html .= '<h1>';
-		$html .= $current_page_info[0][0];
-		$html .= '<small>' . $current_page_info[0][1] . '</small>';
-		$html .= '</h1>';
-		$html .= '<ol class="breadcrumb">';
-		$html .= '	<li><a href="' . base_url('dashboard') . '"><i class="fa fa-dashboard"></i> 主页</a></li>';
-		krsort($current_page_info);
-		foreach ($current_page_info as $k => $v) {
-			if ($k == 0) {
-				$html .= '<li>' . $v[0] . '</li>';
-			} else {
-				$html .= '<li><a href="' . base_url("$v[2]/$v[3]") . '">' . $v[0] . '</a></li>';
+		if(!empty($current_pageinfo)){//模块未录入时不加载
+			$html = '';
+			$html .= '<section class="content-header">';
+			$html .= '<h1>';
+			$html .= $current_page_info[0][0];
+			$html .= '<small>' . $current_page_info[0][1] . '</small>';
+			$html .= '</h1>';
+			$html .= '<ol class="breadcrumb">';
+			$html .= '	<li><a href="' . base_url('dashboard') . '"><i class="fa fa-dashboard"></i> 主页</a></li>';
+			krsort($current_page_info);
+			foreach ($current_page_info as $k => $v) {
+				if ($k == 0) {
+					$html .= '<li>' . $v[0] . '</li>';
+				} else {
+					$html .= '<li><a href="' . base_url("$v[2]/$v[3]") . '">' . $v[0] . '</a></li>';
+				}
+
 			}
 
+			$html.='</ol>';
+			$html.='</section>';
+			return $html;
 		}
-
-		$html.='</ol>';
-		$html.='</section>';
-		return $html;
 
 	}
 

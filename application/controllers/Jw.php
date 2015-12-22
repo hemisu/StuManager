@@ -132,7 +132,9 @@ class Jw extends Base_Controller {
 		$jwget = $this->major($jwinfo['student_id'] ,$jwinfo['password']);
 		//无权限时访问路径
 		if(!empty($_SESSION['url_forward'])){$next_url=$_SESSION['url_forward'];}else{$next_url=base_url('dashboard');}
-
+		if(!$this->User_model->check_student_id($student_id)){
+			exit(json_encode(array('response'=>false,'recontent'=>$this->User_model->check_student_id($student_id),'next_url'=> base_url('login/binding'))));
+		}
 		if(!empty($jwget['student_id'])){
 			$jwUserInfo=array(
 				'student_id' => $jwget['student_id'],
@@ -144,31 +146,21 @@ class Jw extends Base_Controller {
 			$savejwinfo['jw_password']=base64_encode($jwinfo['password']);
 			$this->User_model->update($savejwinfo,"`student_id`=$student_id");
 			//保存成绩
-			foreach($this->chengji($jwinfo['student_id'],$jwinfo['password']) as $firstr){
-				$r['schoolyear']=$firstr[0];$r['term']=$firstr[1];$r['student_id']=$firstr[2];$r['coursename']=$firstr[3];
-				$r['nature']=$firstr[4];$r['credit']=$firstr[6];$r['points']=$firstr[7];$r['score']=$firstr[8];
-				$r['minormark']=$firstr[9];$r['makeup']=$firstr[10];$r['rebuild']=$firstr[11];$r['collegename']=$firstr[12];
-				$r['rebuildmark']=$firstr[13];
-				if($getinfo=$this->User_score_model->get_one($r)){
-					$this->User_score_model->update($r,array('score_id'=>$getinfo['score_id']));
-				}else{
-					$this->User_score_model->insert($r);
-				}
+			foreach($this->chengji($jwinfo['student_id'],$jwinfo['password']) as $scoreinfo){
+				$r['student_id']=$student_id;$r['classcode']=$scoreinfo['classcode'];//查询条件
+				if(!$this->User_score_model->get_one($r)){$this->User_score_model->set_insert($scoreinfo);}
+
 			}
 			//保存考证成绩
 			unset($r);
 			foreach($this->djks($jwinfo['student_id'],$jwinfo['password']) as $secstr){
-				$r['schoolyear'] = $secstr[0];$r['term'] = $secstr[1];$r['testname'] = $secstr[2];$r['student_id'] = $secstr[3];
-				$r['testdate'] = $secstr[4];$r['score'] = $secstr[5];$r['listeningscore'] = $secstr[6];
-				$r['readingscore'] = $secstr[7];$r['writingscore'] = $secstr[8];$r['comprehensivescore'] = $secstr[9];
-				if(!$getinfo=$this->User_ranktest_model->get_one($r)){
-					$this->User_ranktest_model->insert($r);
-				}
+				$r['student_id']=$student_id;$r['ticket_number']=$secstr['ticket_number'];//查询条件
+				if(!$this->User_ranktest_model->get_one($r)){$this->User_ranktest_model->set_insert($secstr);}
 			}
 			echo json_encode($jwUserInfo);
 			$this->session->set_userdata($jwUserInfo);
 		}else{
-			echo json_encode(array('response' => 'error'));
+			echo json_encode(array('response' => false,'recontent'=>'用户名或者密码错误'));
 		}
 	}
 	/*
@@ -185,7 +177,7 @@ class Jw extends Base_Controller {
 		return $res[0];
 //		print_r($result);
 	}
-	public  function socredata($xh,$pwd){
+	public  function sorcedata($xh,$pwd){
 		$cookie = $this->login($xh,$pwd);
 		$url = "http://jwxt.zust.edu.cn/xscj_gc.aspx?xh=".$xh;
 		$post['ddlXN'] = '';
@@ -238,11 +230,12 @@ class Jw extends Base_Controller {
 		preg_match_all($tmp,$datelist,$macthes);
 
 		$tmp="/<td.*>(.*)<\/td>/iUs";
+		$structrue = array('schoolyear','term','classcode','coursename','nature','student_id','credit','points','score','minormark','makeup','rebuild','collegename','rebuildmark');//score数据结构
 		foreach($macthes[1] as $tr)
 		{
 			preg_match_all($tmp,$tr,$td);
-			unset($td[1][2]);//去除课程代码
-			unset($td[1][5]);//去除课程归属
+			$td[1][5] = $xh;//课程归属改为学号
+
 			switch($td[1][8]){
 				case '优秀':$td[1][8]=95;break;//五级制转化为百分制
 				case '良好':$td[1][8]=85;break;
@@ -252,25 +245,31 @@ class Jw extends Base_Controller {
 				case '合格':$td[1][8]=85;break;//二级制转化为百分制
 				default:break;
 			}
+			for($i=0;$i<count($structrue);$i++){
+				$td[1][$structrue[$i]]=$td[1][$i];
+			}
+			$td[1]=array_slice($td[1], 14);
 			$score[]=$td[1];
 		}
 		unset($score[0]);
-//		print_r($score);
+		echo "<pre>";
+		print_r($score);
 
-		echo '<table><tr><td>学年</td><td>学期</td><td>课程名称</td><td>课程性质</td><td>学分</td><td>绩点</td><td>成绩</td><td>辅修标记</td><td>补考成绩</td><td>重修成绩</td><td>学院名称</td><td>重修标记</td></tr>';
-		foreach($score as $k){
-			echo '<tr>';
-			foreach($k as $v){
-				echo '<td>'.$v.'</td>';
-			}
-			echo '</tr>';
-		}
-		echo '</table>';
+//		echo '<table><tr><td>学年</td><td>学期</td><td>课程代码</td><td>课程名称</td><td>课程性质</td><td>学号</td><td>学分</td><td>绩点</td><td>成绩</td><td>辅修标记</td><td>补考成绩</td><td>重修成绩</td><td>学院名称</td><td>重修标记</td></tr>';
+//		foreach($score as $k){
+//			echo '<tr>';
+//			foreach($k as $v){
+//				echo '<td>'.$v.'</td>';
+//			}
+//			echo '</tr>';
+//		}
+//		echo '</table>';
+
 	}
 	/*
 	 * 获取考证页面
 	 */
-	private function djks($xh,$pwd){
+	public  function djks($xh,$pwd){
 		$cookie = $this->login($xh,$pwd);
 		$url = "http://jwxt.zust.edu.cn/xsdjkscx.aspx?xh=".$xh;
 		$post['ddlXN'] = '';
@@ -283,11 +282,15 @@ class Jw extends Base_Controller {
 		preg_match_all($tmp,$result,$macthes);
 
 		$tmp="/<td.*>(.*)<\/td>/iUs";
+		$structrue = array('schoolyear','term','testname','ticket_number','testdate','score','listeningscore','readingscore','writingscore','comprehensivescore','student_id');//score数据结构
 		foreach($macthes[1] as $tr)
 		{
 			preg_match_all($tmp,$tr,$td);
-			unset($td[1][3]);//去除准考证号
-			$td[1][3]=$xh;
+			$td[1][10]=$xh;
+			for($i=0;$i<count($structrue);$i++){
+				$td[1][$structrue[$i]]=$td[1][$i];
+			}
+			$td[1]=array_slice($td[1], 11);
 			$djks[]=$td[1];
 		}
 //		$datelist = strstr($code, '',true);
@@ -297,7 +300,7 @@ class Jw extends Base_Controller {
 		[0] => 学年
 		[1] => 学期
 		[2] => 等级考试名称
-		[3] => 准考证号 1
+		[3] => 准考证号
 		[4] => 考试日期
 		[5] => 成绩
 		[6] => 听力成绩
@@ -323,6 +326,8 @@ class Jw extends Base_Controller {
 		 */
 		unset($djks[0]);
 		return $djks;
+//		echo "<pre>";
+//		print_r($djks);
 	}
 
 
@@ -350,7 +355,7 @@ class Jw extends Base_Controller {
     [2] => 课程代码 1 =>学号
     [3] => 课程名称
     [4] => 课程性质
-    [5] => 课程归属 1
+    [5] => 课程归属 1 =>课程代码
     [6] => 学分
     [7] => 绩点
     [8] => 成绩
@@ -380,12 +385,12 @@ class Jw extends Base_Controller {
 		preg_match_all($tmp,$datelist,$macthes);
 
 		$tmp="/<td.*>(.*)<\/td>/iUs";
+		$structrue = array('schoolyear','term','classcode','coursename','nature','student_id','credit','points','score','minormark','makeup','rebuild','collegename','rebuildmark');//score数据结构
 		foreach($macthes[1] as $tr)
 		{
 			preg_match_all($tmp,$tr,$td);
-//			unset($td[1][2]);//去除课程代码
-			$td[1][2]=$xh;
-			unset($td[1][5]);//去除课程归属
+			$td[1][5] = $xh;//课程归属改为学号
+
 			switch($td[1][8]){
 				case '优秀':$td[1][8]=95;break;//五级制转化为百分制
 				case '良好':$td[1][8]=85;break;
@@ -395,20 +400,13 @@ class Jw extends Base_Controller {
 				case '合格':$td[1][8]=85;break;//二级制转化为百分制
 				default:break;
 			}
+			for($i=0;$i<count($structrue);$i++){
+				$td[1][$structrue[$i]]=$td[1][$i];
+			}
+			$td[1]=array_slice($td[1], 14);
 			$score[]=$td[1];
 		}
 		unset($score[0]);
-//		print_r($score);
-
-//		echo '<table><tr><td>学年</td><td>学期</td><td>课程名称</td><td>课程性质</td><td>学分</td><td>绩点</td><td>成绩</td><td>辅修标记</td><td>补考成绩</td><td>重修成绩</td><td>学院名称</td><td>重修标记</td></tr>';
-//		foreach($score as $k){
-//			echo '<tr>';
-//			foreach($k as $v){
-//				echo '<td>'.$v.'</td>';
-//			}
-//			echo '</tr>';
-//		}
-//		echo '</table>';
 		return $score;
 	}
 
