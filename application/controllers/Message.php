@@ -12,4 +12,14 @@ class Message extends Login_Controller {
 		$this->load->view('siderbar',$this->page_data);
 		$this->load->view('public/message',$this->page_data);
 	}
+	public function send(){
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('public/message_send',$this->page_data);
+	}
+	public function read(){
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('public/message_read',$this->page_data);
+	}
 }

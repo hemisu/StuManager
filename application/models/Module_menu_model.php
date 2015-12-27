@@ -249,7 +249,7 @@ class Module_menu_model extends Base_Model {
 	 */
 	public function get_page_header_html(){
 		$current_page_info=$this->get_current_page_info();
-		if(!empty($current_pageinfo)){//模块未录入时不加载
+		if(!empty($current_pageinfo[0][0])){//模块未录入时不加载
 			$html = '';
 			$html .= '<section class="content-header">';
 			$html .= '<h1>';

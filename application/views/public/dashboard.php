@@ -254,7 +254,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <script>
 	$(function () {
 		$(".announcecontent").each(function () {
-			var maxwidth = 400;
+			var maxwidth = 100;
 			if ($(this).text().length > maxwidth) {
 				var myid= $(this).data('announceid'); console.log(myid);
 				$(this).html($(this).html().substring(0, maxwidth));
