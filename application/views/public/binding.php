@@ -6,7 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<link href="favicon.png" rel="icon" type="image/x-icon" />
+	<link href="<?echo base_url();?>/favicon.png" rel="icon" type="image/x-icon" />
 	<title>教务系统账号登录 - 学生管理系统 StuManager</title>
 	<!-- Tell the browser to be responsive to screen width -->
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -18,6 +18,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/bootstrap/css/ionicons.min.css');?>">
 	<!-- Theme style -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/dist/css/AdminLTE.min.css');?>">
+	<!-- animate.css -->
+	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/animate.css');?>">
 	<!-- iCheck -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/iCheck/square/blue.css');?>">
 	<!-- bootstrapValidator -->
@@ -34,7 +36,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<![endif]-->
 </head>
 <body class="hold-transition register-page">
-<div class="register-box">
+<div class="register-box animated fadeInUp">
 	<div class="register-logo">
 		<a href="../../index2.html">Stu<b>Manager</a>
 	</div>
@@ -196,7 +198,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 						$.scojs_message(result.recontent, $.scojs_message.TYPE_ERROR);
 //						$('#bindingForm').data('formValidation').resetForm();
-						$.GoUrl(result.next_url, 2);
 
 					} else {
 						console.log(result);

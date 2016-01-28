@@ -6,35 +6,78 @@ class Module_menu_model extends Base_Model {
 		parent::__construct();
 
 	}
-	public function sider_html(){
+
+	/**
+	 * 侧栏输出
+	 * @param int
+	 * @return string
+	 */
+	public function sider_html($group_id){
 		$siderinfo=$this->select('`is_display`=1');//获取module_menu数据 条件搜索
 		$html ='';
 		$html .= '<ul class="sidebar-menu">';
 		$list_order_arr=$this->arr_ksort($siderinfo,'list_order');//按照list_order排序后
 		foreach($list_order_arr as $v){
+			/*======先显示头部======*/
 			if($v['is_header']){//显示分割栏
 				$html.= '<li class="header">'.$v['menu_name'].'</li>';
 				continue; // 当为头时，跳出本次循环
-			}else if($v['show_alone']){//独立显示为一栏
+			}
+			/*======判断权限再显示======*/
+			if($group_id != SUPERADMIN_GROUP_ID){//避开最高管理员
+				if( $v['menu_id'] != 1){//避开主页 dashboard的menu_id=1
+					// 用户组权限数据库中搜索权限
+					$priv = $this->User_group_priv_model->count(array('menu_id'=>$v['menu_id'], 'group_id'=>$group_id ));
+					if(!$priv)continue;//不存在 跳过本次循环
+				}
+			}
+			/*======侧栏html代码生成======*/
+			if($v['show_alone']){//独立显示为一栏
 				if($v['is_parent']){//是父元素
 					if(empty($v['arr_childid'])){//父元素但无子元素 => 单独显示，无下拉菜单
-						$html.= '<li class="';
-						if(trim($this->router->class)==$v['controller'] && trim($this->router->method)==$v['method'])$html.=' active';
-						$html.=	'"><a href="'.base_url('').$v['controller'].'/'.$v['method'].'">';
+						$html.= '<li';
+						if(trim($this->router->class)==$v['controller'] && trim($this->router->method)==$v['method'])
+							$html.=' class="active"';
+						$html.=	'><a href="'.base_url('').$v['controller'].'/'.$v['method'].'">';
 						$html.= '<i class="fa '.$v['css_icon'].'"></i><span>'.$v['menu_name'].'</span>';//显示css_icon和栏目名
 					}else{//父元素有子元素 => 下拉菜单样式
-						$html.= '<li class="treeview ';
-						if(trim($this->router->class)==$v['controller']  && trim($this->router->method)==$v['method'])$html.=' active';
-						$html.= '"><a href="#">';
-						$html.= '<i class="fa '.$v['css_icon'].'"></i><span>'.$v['menu_name'].'</span>';//显示css_icon和栏目名
-						$html.= '<i class="fa fa-angle-left pull-right"></i></a>';
-						$html.= $this->get_child_menu_html($v,$siderinfo);
+
+						unset($r);//清空子集数组
+						foreach(explode(',',$v['arr_childid']) as $whereid){
+							$r[]= $this->get_one("`menu_id`=$whereid");
+						}//搜索子集放入$r
+
+						$v['child_display']=0;//声明 子集display
+
+						foreach($r as $rs){
+							if(!empty($rs)){
+								if($rs['is_display']==1)	$v['child_display']++;//子集display==1 累加
+							}
+						}
+
+						if($v['child_display']){//子元素 有显示
+							$html.= '<li class="treeview';
+							if(trim($this->router->class)==$v['controller']  && trim($this->router->method)==$v['method'])$html.=' active';
+							$html.= '"><a href="#">';
+							$html.= '<i class="fa '.$v['css_icon'].'"></i><span>'.$v['menu_name'].'</span>';//显示css_icon和栏目名
+							$html.= '<i class="fa fa-angle-left pull-right"></i></a>';
+							$html.= $this->get_child_menu_html($v,$siderinfo,$group_id);
+						}else{//子元素都不显示
+							$html.= '<li ';
+							if(trim($this->router->class)==$v['controller'] && trim($this->router->method)==$v['method'])
+								$html.='class="active"';
+							$html.= '>'.'<a href="'.base_url().$v['controller'].'/'.$v['method'].'">';
+							$html.= '<i class="fa '.$v['css_icon'].'"></i><span>'.$v['menu_name'].'</span>';
+							$html.= '</a></li>';
+						}
+
 					}
 					$html.= '</li>';
 				}else{//不是父元素但独立显示为一栏 无下拉菜单
-					$html.= '<li class="';
-					if(trim($this->router->class)==$v['controller'] && trim($this->router->method)==$v['method'])$html.='active';
-					$html.= '">'.'<a href="'.base_url().$v['controller'].'/'.$v['method'].'">';
+					$html.= '<li ';
+					if(trim($this->router->class)==$v['controller'] && trim($this->router->method)==$v['method'])
+						$html.='class="active"';
+					$html.= '>'.'<a href="'.base_url().$v['controller'].'/'.$v['method'].'">';
 					$html.= '<i class="fa '.$v['css_icon'].'"></i> <span>'.$v['menu_name'].'</span>';
 					$html.= '</a></li>';
 				}
@@ -49,14 +92,14 @@ class Module_menu_model extends Base_Model {
 	 * @param array 总数组
 	 * @return array
 	 */
-	public function get_child_menu_html($v,$siderinfo){
+	public function get_child_menu_html($v,$siderinfo,$group_id){
 		$html ='';
 		$html.= '<ul class="treeview-menu">';
 		$v['child_id']=explode(',',$v['arr_childid']);
 		foreach($v['child_id'] as $child_id){//{1,2}
 			foreach($siderinfo as $childinfo){//sideinfo遍历与child_id碰撞
 				if($child_id==$childinfo['menu_id'] && !$childinfo['show_alone'] ){
-
+					unset($r);
 					foreach(explode(',',$childinfo['arr_childid']) as $whereid){
 						$r[]= $this->get_one("`menu_id`=$whereid");
 					}//搜索子集放入$r
@@ -125,8 +168,20 @@ class Module_menu_model extends Base_Model {
 				$html .='<td>'.$v['list_order'].'</td>';
 				$html .='<td>'.$v['controller'].'</td>';
 				$html .='<td>'.$v['method'].'</td>';
-				$html .='<td>'.$v['is_display'].'</td>';
-				$html .='<td>'.$v['show_alone'].'</td>';
+				$html .='<td>';
+				if($v['is_display']){
+					$html.='<span class="glyphicon glyphicon-ok text-light-blue" aria-hidden="true"></span>';
+				} else{
+					$html.='<span class="glyphicon glyphicon-remove text-red" aria-hidden="true"></span>';
+				}
+				$html .='</td>';
+				$html .='<td>';
+				if($v['show_alone']){
+					$html.='<span class="glyphicon glyphicon-ok text-light-blue" aria-hidden="true"></span>';
+				} else{
+					$html.='<span class="glyphicon glyphicon-remove text-red" aria-hidden="true"></span>';
+				}
+				$html .='</td>';
 				$html .='<td><a href="'.base_url('admin/modulemenu').'_add/menu_id/'.$v['menu_id'].'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span> 添加子栏目</a>
 <a href="'.base_url('admin/modulemenu').'_edit/menu_id/'.$v['menu_id'].'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-wrench"></span> 修改</a></td>';
 				$html .='</b></tr>';
@@ -138,8 +193,20 @@ class Module_menu_model extends Base_Model {
 				$html .='<td>'.$v['list_order'].'</td>';
 				$html .='<td>'.$v['controller'].'</td>';
 				$html .='<td>'.$v['method'].'</td>';
-				$html .='<td>'.$v['is_display'].'</td>';
-				$html .='<td>'.$v['show_alone'].'</td>';
+				$html .='<td>';
+				if($v['is_display']){
+					$html.='<span class="glyphicon glyphicon-ok text-light-blue" aria-hidden="true"></span>';
+				} else{
+					$html.='<span class="glyphicon glyphicon-remove text-red" aria-hidden="true"></span>';
+				}
+				$html .='</td>';
+				$html .='<td>';
+				if($v['show_alone']){
+					$html.='<span class="glyphicon glyphicon-ok text-light-blue" aria-hidden="true"></span>';
+				} else{
+					$html.='<span class="glyphicon glyphicon-remove text-red" aria-hidden="true"></span>';
+				}
+				$html .='</td>';
 				$html .='<td><a href="'.base_url('admin/modulemenu').'_add/menu_id/'.$v['menu_id'].'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span> 添加子栏目</a>
 <a href="'.base_url('admin/modulemenu').'_edit/menu_id/'.$v['menu_id'].'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-wrench"></span> 修改</a></td>';
 				$html .='</tr>';
@@ -172,8 +239,20 @@ class Module_menu_model extends Base_Model {
 					$html .='<td>'.$child_info['list_order'].'</td>';
 					$html .='<td>'.$child_info['controller'].'</td>';
 					$html .='<td>'.$child_info['method'].'</td>';
-					$html .='<td>'.$child_info['is_display'].'</td>';
-					$html .='<td>'.$child_info['show_alone'].'</td>';
+					$html .='<td>';
+					if($child_info['is_display']){
+						$html.='<span class="glyphicon glyphicon-ok text-light-blue" aria-hidden="true"></span>';
+					} else{
+						$html.='<span class="glyphicon glyphicon-remove text-red" aria-hidden="true"></span>';
+					}
+					$html .='</td>';
+					$html .='<td>';
+					if($child_info['show_alone']){
+						$html.='<span class="glyphicon glyphicon-ok text-light-blue" aria-hidden="true"></span>';
+					} else{
+						$html.='<span class="glyphicon glyphicon-remove text-red" aria-hidden="true"></span>';
+					}
+					$html .='</td>';
 					$html .='<td><a href="'.base_url('admin/modulemenu').'_add/menu_id/'.$child_info['menu_id'].'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-plus"></span> 添加子栏目</a>
 <a href="'.base_url('admin/modulemenu').'_edit/menu_id/'.$child_info['menu_id'].'" class="btn btn-default btn-xs"><span class="glyphicon glyphicon-wrench"></span> 修改</a></td>';
 					$html .='</tr>';
@@ -249,7 +328,7 @@ class Module_menu_model extends Base_Model {
 	 */
 	public function get_page_header_html(){
 		$current_page_info=$this->get_current_page_info();
-		if(!empty($current_pageinfo[0][0])){//模块未录入时不加载
+		if(isset($current_page_info)) {//模块未录入时不加载
 			$html = '';
 			$html .= '<section class="content-header">';
 			$html .= '<h1>';

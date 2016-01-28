@@ -112,6 +112,74 @@ class User_group_model extends Base_Model {
 		return $html;
 	}
 	/**
+	 * 获取用户组数组
+	 * return array('gruop_id'=>gruop_name)
+	 */
+	public function get_user_gruop_arr(){
+		$s = $this->select();
+		$array=array();
+		foreach($s as $v){
+			$array[$v['group_id']]=$v['group_name'];
+		}
+		return $array;
+	}
+	/**
+	 * 获取用户组select
+	 * return html
+	 */
+	public function get_user_gruop_select(){
+		$s = $this->select();
+		$html='';
+		foreach($s as $v){
+			$html.='<option value="'.$v['group_id'].'">';
+			$html.=$v['group_name'];
+			$html.='</option>';
+		}
+		return $html;
+	}
+	/**
+	 * 获取用户组select 有selected
+	 * @param $str
+	 * @return html
+	 */
+	public function get_user_gruop_selected($str){
+		$s = $this->select();
+		if(isset($str)){
+			$arr=explode(',',$str);
+		}
+		$html='';
+		foreach($s as $v){
+			$html.='<option value="'.$v['group_id'].'"';
+			foreach($arr as $b){
+				if($v['group_id']==$b)$html.='selected="selected"';
+			}
+			$html.='>'.$v['group_name'];
+			$html.='</option>';
+		}
+		return $html;
+	}
+	/**
+	 * 获取用户组名称
+	 * @param $group_id
+	 * @return $html
+	 */
+	public function get_user_gruop_name($group_id){
+		$s = $this->select();
+		if(isset($group_id)){
+			$arr=explode(',',$group_id);
+		}
+		$newarr=array();
+		foreach($s as $v){
+			foreach($arr as $b){
+				if($v['group_id']==$b){
+					$newarr[]=$v['group_name'];
+				}
+			}
+		}
+		$html=join(',',$newarr);
+		return $html;
+	}
+	/**
 	 * ARRAY KEY排序
 	 * @param $array
 	 * @param $key

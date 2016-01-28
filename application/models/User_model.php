@@ -6,17 +6,24 @@ class User_model extends Base_Model {
 		$this->table_name = 'user';
 		parent::__construct();
 	}
-	
+	/*
+	 * 判断$student_id是否存在
+	 * return num
+	 */
 	function check_student_exists($student_id)
 	{
 		$c = $this->count("`student_id` ='".$student_id."'");
 		return $c;
 	}
+	/*
+	 * 判断$student_id是否存在
+	 * return bool
+	 */
 	function check_student_id($student_id)
 	{
 		$c = $this->count("`student_id` ='".$student_id."'");
-		if($c){return true;}
-		else{return false;}
+		if($c>0){return false;}
+		else{return true;}
 	}
 	function check_password($student_id,$password){
 		$r = $this->User_model->get_one("`student_id`=$student_id");

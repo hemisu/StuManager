@@ -1,6 +1,8 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 class MY_Controller extends CI_Controller
 {
+	public $stu_status;
+	public $stu_task;
 	protected $page_data = array(
 		'module_name' => '',
 		'controller_name' => '',
@@ -8,6 +10,9 @@ class MY_Controller extends CI_Controller
 	);
 	function __construct(){
 		parent::__construct();
+		$this->config->load('stu');
+		$this->stu_status = $this->config->item('stu_status');
+		$this->stu_task = $this->config->item('stu_task');
 	}
 
 }
@@ -54,13 +59,15 @@ class Login_Controller extends MY_Controller
 		//======页面信息======
 		$this->page_data['controller_name']= trim($this->router->class);
 		$this->page_data['method_name']= trim($this->router->method);
-		$this->page_data['sider_ul_list'] = $this->Module_menu_model->sider_html();//侧栏信息
 
+		$this->check_member();//判断登陆并传递当前页面的值
+		$this->check_priv();//判断是否有权限
+
+		$this->page_data['sider_ul_list'] = $this->Module_menu_model->sider_html($this->group_id);//侧栏信息
 		$this->page_data['pageheader'] = $this->Module_menu_model->get_page_header_html();//本页面信息
 		$this->page_data['pageheaderinfo'] = $this->Module_menu_model->get_current_page_info();
 //		$this->Module_menu_model->get_menu_active();
-		$this->check_member();//判断登陆并传递当前页面的值
-		$this->check_priv();//判断是否有权限
+
 
 	}
 	/**
@@ -77,7 +84,7 @@ class Login_Controller extends MY_Controller
 		}else{
 			$this->page_data['userinfo'] = $userinfo;//获取用户信息
 			$this->group_id = $userinfo['group_id'];
-
+			return $this->group_id;
 		}
 	}
 	/**
@@ -111,6 +118,12 @@ class Login_Controller extends MY_Controller
 			'controller'=>$this->page_data['controller_name'] ,
 			'group_id'=>$this->group_id ));
 		if(!$r) $this->showmessage('您没有权限操作该项','');
+	}
+	/**
+	 * 返回group_id
+	 */
+	public function get_group_id(){
+		return $this->group_id;
 	}
 
 }

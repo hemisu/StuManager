@@ -26,12 +26,18 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/bootstrap/css/ionicons.min.css');?>">
 	<!-- Theme style -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/dist/css/AdminLTE.min.css');?>">
+	<!-- animate.css -->
+	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/animate.css');?>">
 	<!-- sco.message -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/sco/css/sco.message.css');?>">
 	<!-- pace.js -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/pace/themes/blue/pace-theme-center-simple.css');?>">
 	<!-- table -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/bootstrap-table/bootstrap-table.min.css');?>">
+	<!-- Select2 -->
+	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/select2/select2.min.css');?>">
+	<!-- bootstrap slider -->
+	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/bootstrap-slider/slider.css');?>">
 	<!-- jvectormap -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/jvectormap/jquery-jvectormap-1.2.2.css');?>">
 	<!-- bootstrap wysihtml5 - text editor -->
@@ -274,7 +280,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<li class="user-header">
 			<img src="<?echo base_url('/public/AdminLTE2/dist/img')?>/user9-400x400.jpg" class="img-circle" alt="User Image">
 			<p>
-				<?echo isset($userinfo['username']) ? $userinfo['username']: "Data Error:@param:userinfo";?> - Web Developer
+				<?echo isset($userinfo['username']) ? $userinfo['username']: "Data Error:@param:userinfo";?> - <?=$this->User_group_model->get_user_gruop_name($userinfo['group_id']);?>
 				<small>Member since Nov. 2015</small>
 			</p>
 		</li>
@@ -303,8 +309,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 </li>
 <!-- Control Sidebar Toggle Button -->
 <li>
-	<a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+	<a href="<?=base_url('login/loginout');?>"><i class="fa fa-times"></i></a>
 </li>
+<!--<li>-->
+<!--	<a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>-->
+<!--</li>-->
 </ul>
 </div>
 

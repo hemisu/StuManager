@@ -21,30 +21,32 @@
 					</div>
 				</div><!-- /.box-header -->
 				<div class="box-body no-padding">
-					<table class="table table-striped table-responsive">
-						<tr>
-							<th>学年</th>
-							<th>学期</th>
-							<th>等级考试名称</th>
-							<th>准考证号</th>
-							<th>考试日期</th>
-							<th>成绩</th>
-							<th>听力成绩</th>
-							<th>阅读成绩</th>
-							<th>写作成绩</th>
-							<th>综合成绩</th>
-						</tr>
-						<?foreach($scoreinfo as $k){
-							echo '<tr>';
-							unset($k['student_id']);
-							unset($k['ranktest_id']);
-							foreach($k as $v){
-								echo '<td>'.$v.'</td>';
-							}
-							echo '</tr>';
-						}?>
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<tr>
+								<th>学年</th>
+								<th>学期</th>
+								<th>等级考试名称</th>
+								<th>准考证号</th>
+								<th>考试日期</th>
+								<th>成绩</th>
+								<th>听力成绩</th>
+								<th>阅读成绩</th>
+								<th>写作成绩</th>
+								<th>综合成绩</th>
+							</tr>
+							<?foreach($scoreinfo as $k){
+								echo '<tr>';
+								unset($k['student_id']);
+								unset($k['ranktest_id']);
+								foreach($k as $v){
+									echo '<td>'.$v.'</td>';
+								}
+								echo '</tr>';
+							}?>
 
-					</table>
+						</table>
+					</div>
 				</div><!-- /.box-body -->
 				<div class="box-footer clearfix">
 				</div><!-- /.box-booter -->

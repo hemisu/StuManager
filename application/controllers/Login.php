@@ -13,14 +13,43 @@ class Login extends Base_Controller {
 	public function login(){
 		if(!$this->input->is_ajax_request()) exit('请使用正确方式登陆');
 		if(isset($_POST['student_id'])) {
-			$student_id = $this->security->xss_clean($this->input->post('student_id'));
-			$post_password = $this->security->xss_clean($this->input->post('password'));
+			$student_id = $this->security->xss_clean($this->input->post('student_id'));//xss过滤
+			$post_password = $this->security->xss_clean($this->input->post('password'));//xss过滤
 			$r = $this->User_model->get_one(array('student_id'=>$student_id));
-			if(!$r) exit(json_encode(array('status'=>false,'tips'=>'用户名或密码不正确')));
-			$password = md5($post_password.$r['salt']);
+			if(!$r) exit(json_encode(array('status'=>false,'tips'=>'用户不存在')));
+
+			$this->load->model('Login_times_model');
+			//密码错误剩余重试次数
+			$rtime = $this->Login_times_model->get_one(array('student_id'=>$student_id));//查到Login_times 有错误记录
+			$maxloginfailedtimes = 5;
+			if($rtime)
+			{
+				if($rtime['failure_times'] >= $maxloginfailedtimes) {
+					$minute = 60-floor((SYS_TIME-$rtime['login_time'])/60);
+					exit(json_encode(array('status'=>false,'tips'=>' 密码尝试次数过多，被锁定'.$minute.'分钟')));
+				}
+			}
+			$ip = $this->input->ip_address();
+
+			$password = md5($post_password.$r['salt']);//加salt后的密码
 //			echo $salt=base64_encode(mcrypt_create_iv(32,MCRYPT_DEV_RANDOM));
-			if($password != $r['password']) exit(json_encode(array('status'=>false,'tips'=>'用户名或密码不正确')));
-//无权限时访问路径
+			if($password != $r['password']){
+				if($rtime && $rtime['failure_times'] < $maxloginfailedtimes) {//有错误记录 且 错误次数小于最大错误次数
+					$times = $maxloginfailedtimes-intval($rtime['failure_times']);
+					$this->Login_times_model->update(array('login_ip'=>$ip,'failure_times'=>'+=1'),array('student_id'=>$student_id));
+				} else {
+					$this->Login_times_model->delete(array('student_id'=>$student_id));//无错误记录
+					$this->Login_times_model->insert(array('student_id'=>$student_id,'login_ip'=>$ip,'login_time'=>SYS_TIME,'failure_times'=>1));
+					$times = $maxloginfailedtimes;
+				}
+				exit(json_encode(array('status'=>false,'tips'=>' 密码错误您还有'.$times.'机会')));
+			}
+
+			$this->Login_times_model->delete(array('student_id'=>$student_id));
+//			if($r['is_lock'])exit(json_encode(array('status'=>false,'tips'=>' 您的帐号已被锁定，暂时无法登录')));//锁定账号
+			$this->User_model->update(array('lastLoginIp'=>$ip,'lastLoginTime'=>date('Y-m-d H:i:s')),array('student_id'=>$r['student_id']));
+
+//无权限时跳转时的访问路径
 			if(!empty($_SESSION['url_forward'])){$next_url=$_SESSION['url_forward'];}else{$next_url=base_url('dashboard');}
 
 			$sessionUserInfo=array(

@@ -31,7 +31,7 @@
 					<form id="groupForm" action="<?echo base_url('admin/user_group_edit');?>" method="post">
 					<div class="form-group">
 						<label>用户组ID</label>
-						<input type="text" class="form-control" name="group_id" value="<?=($group_info['group_id'])?:'Data Error:@param:group_info';?>">
+						<input type="text" class="form-control" name="group_id" value="<?=(isset($group_info['group_id']))?$group_info['group_id']:'Data Error:@param:group_info';?>">
 					</div>
 					<div class="form-group">
 						<label>用户组名</label>

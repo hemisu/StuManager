@@ -6,6 +6,8 @@ class Admin extends Login_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		//======载入模块======
+		$this->load->model(array('Task_title_model'));
 	}
 	/**
 	 * 内容管理-公告-列表
@@ -51,9 +53,9 @@ class Admin extends Login_Controller {
 	 */
 	public function announce_edit()
 	{
+		$array = $this->uri->uri_to_assoc(3);
+		$announce_id=$array['announce_id'];
 		if($this->input->is_ajax_request()){
-			$array = $this->uri->uri_to_assoc(3);
-			$announce_id=$array['announce_id'];
 			$data=array();
 			$data['title'] = $title = $this->input->post('title');
 			$data['level'] = $level = $this->input->post('level');
@@ -63,9 +65,7 @@ class Admin extends Login_Controller {
 
 			exit(json_encode(array('title'=>$title,'level'=>$level,'content'=>$content,'next_url'=>base_url('admin/announce'))));
 		}
-		$array = $this->uri->uri_to_assoc(3);
-		$announce_id=$array['announce_id'];
-		$this->page_data['announce'] = $this->Announce_model->select("`id`=$announce_id")[0];
+		$this->page_data['announce'] = $this->Announce_model->get_one("`id`=$announce_id");
 		$this->load->view('head',$this->page_data);
 		$this->load->view('siderbar',$this->page_data);
 		$this->load->view('admin/admin_announce_edit');
@@ -82,7 +82,77 @@ class Admin extends Login_Controller {
 		$this->Announce_model->delete("`id`=$announce_id");
 		redirect(base_url('admin/announce'));
 	}
+	/**
+	 * 内容管理-事项
+	 * task_list
+	 */
+	public function task_list($page_now=1)
+	{
+		$page_now = max(intval($page_now),1);
 
+		$this->page_data['task_list']=$this->Task_title_model->admin_task_list_html($page_now);
+		$this->page_data['task_list_page']=$this->Task_title_model->pages;
+
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('admin/admin_task_list',$this->page_data);
+	}
+	/**
+	 * 内容管理-事项-添加
+	 * task_list_add
+	 *
+	 */
+	public function task_list_add()
+	{
+		if($this->input->is_ajax_request()){
+//			$data=array();
+//			$this->Announce_model->insert($data);
+			$data=$this->input->post();
+			unset($data['_wysihtml5_mode']);
+
+			$this->Task_title_model->insert($data);
+			exit(json_encode(array('next_url'=>base_url('admin/task_list'))));
+		}
+		$this->page_data['group_select']=$this->User_group_model->get_user_gruop_select();
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('admin/admin_task_list_add');
+	}
+	/**
+	 * 内容管理-事项-修改
+	 * task_list_edit
+	 *
+	 */
+	public function task_list_edit()
+	{
+		$array = $this->uri->uri_to_assoc(3);
+		$task_id=$array['task_id'];
+		if($this->input->is_ajax_request()){
+			$data=$this->input->post();
+			unset($data['_wysihtml5_mode']);
+
+			$this->Task_title_model->update($data,"`task_id`=$task_id");
+
+			exit(json_encode(array($data,'next_url'=>base_url('admin/task_list'))));
+		}
+		$this->page_data['task'] = $this->Task_title_model->get_one("`task_id`=$task_id");
+		$this->page_data['group_select']=$this->User_group_model->get_user_gruop_selected($this->page_data['task']['group_id']);
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('admin/admin_task_list_edit');
+	}
+	/**
+	 * 内容管理-事项-删除
+	 * task_list_delete
+	 *
+	 */
+	public function task_list_delete()
+	{
+		$array = $this->uri->uri_to_assoc(3);
+		$task_id=$array['task_id'];
+		$this->Task_title_model->delete("`task_id`=$task_id");
+		redirect(base_url('admin/task_list'));
+	}
 	/**
 	 * 系统管理-侧栏-列表
 	 * modulemenu
@@ -174,6 +244,13 @@ class Admin extends Login_Controller {
 		$this->load->view('siderbar',$this->page_data);
 		$this->load->view('admin/admin_modulemenu_edit',$this->page_data);
 	}
+
+	/**
+	 * 用户管理-默认页
+	 */
+	public function user(){
+		redirect(base_url('admin/user_library'));
+	}
 	/**
 	 * 用户管理-基本信息库
 	 * user_library
@@ -188,8 +265,12 @@ class Admin extends Login_Controller {
 	 * 用户管理-信息以json格式输出
 	 */
 	public function user_library_json(){
-		$userinfo = $this->User_model->select('','`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`');
-		echo json_encode($userinfo);
+		$userinfo = $this->User_model->select('','`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`,`group_id`');
+		foreach($userinfo as $v){
+			$v['group_name']=$this->User_group_model->get_user_gruop_name($v['group_id']);
+			$userinfos[]=$v;
+		}
+		echo json_encode($userinfos);
 	}
 	/**
 	 * 系统管理-用户管理-用户组管理-用户组列表
@@ -312,5 +393,54 @@ class Admin extends Login_Controller {
 		$this->load->view('head',$this->page_data);
 		$this->load->view('siderbar',$this->page_data);
 		$this->load->view('admin/admin_user_group_priv',$this->page_data);
+	}
+	/**
+	 * 用户管理-添加新用户
+	 * user_add
+	 *
+	 */
+	public function user_add(){
+		if($this->input->is_ajax_request()){
+			$data=$this->input->post();
+			$data['password']=md5($data['password'].$data['salt']);
+			$this->User_model->insert($data);
+			exit(json_encode(array('data'=> $data,'next_url'=> base_url('admin/user_library')))) ;
+		}
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('admin/admin_user_add',$this->page_data);
+	}
+	/**
+	 * 用户管理-编辑用户
+	 * user_edit
+	 *
+	 */
+	public function user_edit($student_id = ''){
+		if($this->input->is_ajax_request()){
+			$data=$this->input->post();
+			if($data['password']==$this->User_model->get_one("`student_id`='$student_id'")['password']){//如果密码未改变
+				unset($data['password']);//弹出密码
+			}else{
+				$data['password']=md5($data['password'].$data['salt']);
+			}
+			$this->User_model->update($data,"`student_id`='$student_id'");
+			exit(json_encode(array('data'=> $data,'next_url'=> base_url('admin/user_library')))) ;
+		}
+		$this->page_data['edituserinfo'] = $this->User_model->get_one("`student_id`='$student_id'");//获取被编辑的用户信息
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('admin/admin_user_edit',$this->page_data);
+	}
+	/**
+	 * 用户管理-删除用户
+	 * user_delete
+	 *
+	 */
+	public function user_delete($student_id = ''){
+		if($this->User_model->delete("`student_id`='$student_id'")){
+			echo json_encode(array('student_id'=> $student_id));
+		}else{
+			echo json_encode(array('response'=> false));
+		}
 	}
 }

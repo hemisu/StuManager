@@ -6,7 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<link href="favicon.png" rel="icon" type="image/x-icon" />
+	<link href="<?echo base_url();?>/favicon.png" rel="icon" type="image/x-icon" />
 	<title>登录 - 学生管理系统 StuManager </title>
 	<!-- Tell the browser to be responsive to screen width -->
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -18,6 +18,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/bootstrap/css/ionicons.min.css');?>">
 	<!-- Theme style -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/dist/css/AdminLTE.min.css');?>">
+	<!-- animate.css -->
+	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/animate.css');?>">
 	<!-- iCheck -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/iCheck/square/blue.css');?>">
 	<!-- bootstrapValidator -->
@@ -35,7 +37,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<![endif]-->
 </head>
 <body class="hold-transition login-page">
-<div class="login-box">
+<div class="login-box animated fadeInUp">
 	<div class="login-logo">
 		<a href="../../index2.html">Stu<b>Manager</b></a>
 	</div><!-- /.login-logo -->
@@ -146,12 +148,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 				// Use Ajax to submit form data
 				$.post($form.attr('action'), $form.serialize(), function (result) {
-					if (result.status ==false) {
-
-						$.scojs_message('账号或者密码错误', $.scojs_message.TYPE_ERROR);
+					if (result.status == false) {
+						$.scojs_message(result.tips, $.scojs_message.TYPE_ERROR);
 						$('#loginForm').data('bootstrapValidator').resetForm();
-
-					} else {
+					}else{
 						console.log(result);
 						$.scojs_message(result.username + '&nbsp;,欢迎登陆', $.scojs_message.TYPE_OK);
 						$.GoUrl(result.next_url, 1);

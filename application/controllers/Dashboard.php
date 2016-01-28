@@ -5,11 +5,14 @@ class Dashboard extends Login_Controller {
 	function __construct()
 	{
 		parent::__construct();
+		//======载入模块======
+		$this->load->model(array('Task_title_model'));
 
 	}
 	public function index()
 	{
 		$this->page_data['announcelist']=$this->Announce_model->announce_dashboard_html();//获取公告
+		$this->page_data['tasklist']=$this->Task_title_model->dashboard_html();//获取任务列表
 		$this->load->view('head',$this->page_data);
 		$this->load->view('siderbar',$this->page_data);
 		$this->load->view('public/dashboard',$this->page_data);

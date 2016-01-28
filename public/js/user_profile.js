@@ -73,13 +73,6 @@ $(document).ready(function(){
 						message: '手机号只能全为数字'
 					}
 				}
-			},
-			qinshi:{
-				validators: {
-					notEmpty: {
-						message: '寝室不能为空'
-					}
-				}
 			}
 		}
 	}).on('success.form.bv', function (e) {

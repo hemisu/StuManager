@@ -91,3 +91,4 @@ define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
 define('HTTP_REFERER', isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '');
 define('SITE_BASE', '/StuManager/');//安装目录
 define('SUPERADMIN_GROUP_ID',  1);//超级管理员ID
+define('SYS_TIME', time());//当前时间
