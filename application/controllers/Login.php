@@ -59,8 +59,9 @@ class Login extends Base_Controller {
 				'majorclassnum' => $r['classes'],
 				'next_url' => $next_url
 			);
-			echo json_encode($sessionUserInfo);
+
 			$this->session->set_userdata($sessionUserInfo);
+			echo json_encode($sessionUserInfo);
 		}
 	}
 	//		echo "<pre>";

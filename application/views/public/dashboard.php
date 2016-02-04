@@ -51,7 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<!-- Userinfo -->
 		<div class="box box-primary">
 			<div class="box-body box-profile">
-				<img class="profile-user-img img-responsive img-circle" src="<?echo base_url('/public/avatar').'/'.$userinfo['avatar'];?>" alt="User profile picture">
+				<img class="profile-user-img img-responsive img-circle" src="<?echo base_url('/public/avatar').'/'.$userinfo['avatar'];?>" alt="User profile picture" data-toggle="modal" data-target="#avatarModal">
 				<h3 class="profile-username text-center"><?echo isset($userinfo['username']) ? $userinfo['username']: "Data Error:@param:userinfo";?></h3>
 				<p class="text-muted text-center"><?=$this->User_group_model->get_user_gruop_name($userinfo['group_id']);?></p>
 
@@ -74,6 +74,34 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<!-- /.box -->
 	</div><!-- /.col -->
 </div><!-- /.row -->
+	<!-- avatar Modal -->
+	<div class="modal fade" id="avatarModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+					<h4 class="modal-title">更换头像</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-lg-3">
+							<a class="media-left" href="#" target="_blank">
+								<img id="previewpic" src="<?echo base_url('/public/avatar').'/'.$userinfo['avatar'];?>" width="100">
+							</a>
+						</div>
+						<div class="col-lg-9">
+							<h4 class="media-heading">允许上传类型：gif|jpg|jpeg|png|bmp</h4>
+							<form method="post" action="<?=base_url('file/avatar_upload/'.$userinfo['student_id'])?>" enctype="multipart/form-data">
+								<input name="avatar" type="file" size="15">
+								<br/>
+								<input type="submit" name="submitavatar" value="上传头像" class="btn btn-info">
+							</form>
+						</div>
+					</div>
+				</div>
+			</div><!-- /.modal-content -->
+		</div>
+	</div>
 </section><!-- /.content -->
 </div><!-- /.content-wrapper -->
 

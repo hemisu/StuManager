@@ -280,7 +280,7 @@ class Jw extends Base_Controller {
 		//无权限时访问路径
 		if(!empty($_SESSION['url_forward'])){$next_url=$_SESSION['url_forward'];}else{$next_url=base_url('dashboard');}
 		if(!$this->User_model->check_student_id($student_id)){
-			exit(json_encode(array('response'=>false,'recontent'=>$this->User_model->check_student_id($student_id),'next_url'=> base_url('login/binding'))));
+			exit(json_encode(array('response'=>false,'recontent'=>'该用户不存在本系统内','next_url'=> base_url('login/binding'))));
 		}
 		if(!empty($jwget['student_id'])){
 			$jwUserInfo=array(
@@ -290,8 +290,8 @@ class Jw extends Base_Controller {
 				'majorclassnum' => $jwget['major'].$jwget['classnum'],
 				'next_url' => $next_url
 			);
-			$savejwinfo['jw_password']=base64_encode($jwinfo['password']);
-			$this->User_model->update($savejwinfo,"`student_id`=$student_id");
+			$ip = $this->input->ip_address();
+			$this->User_model->update(array('jw_password'=>base64_encode($jwinfo['password']),'lastLoginIp'=>$ip,'lastLoginTime'=>date('Y-m-d H:i:s')),array('student_id'=>$jwget['student_id']));
 //			//保存成绩
 //			foreach($this->chengji($jwinfo['student_id'],$jwinfo['password']) as $scoreinfo){
 //				$r['student_id']=$student_id;$r['classcode']=$scoreinfo['classcode'];//查询条件

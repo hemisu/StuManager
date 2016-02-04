@@ -55,15 +55,22 @@
 								<div class="form-group">
 									<label>类别</label>
 									<select class="form-control" name="cate">
-										<option value="return_statistic">返校统计</option>
-										<option value="leave_statistic">离校统计</option>
-										<option value="evaluate">学业综合评定</option>
-										<option value="completedata">资料补全</option>
-										<option value="scholarship">奖学金评定</option>
-										<option value="identify_poor">贫困生认定</option>
-										<option value="work_study">勤工助学</option>
-										<option value="work_study_hours">勤工工时填写</option>
+										<?
+										foreach($this->stu_task as $val=>$opt){
+											echo '<option value="'.$val.'">'.$opt.'</option>';
+										}
+										?>
 									</select>
+<!--									<select class="form-control" name="cate">-->
+<!--										<option value="return_statistic">返校统计</option>-->
+<!--										<option value="leave_statistic">离校统计</option>-->
+<!--										<option value="evaluate">学业综合评定</option>-->
+<!--										<option value="completedata">资料补全</option>-->
+<!--										<option value="scholarship">奖学金评定</option>-->
+<!--										<option value="identify_poor">贫困生认定</option>-->
+<!--										<option value="work_study">勤工助学</option>-->
+<!--										<option value="work_study_hours">勤工工时填写</option>-->
+<!--									</select>-->
 								</div>
 							</div>
 						</div>

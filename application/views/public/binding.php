@@ -38,7 +38,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <body class="hold-transition register-page">
 <div class="register-box animated fadeInUp">
 	<div class="register-logo">
-		<a href="../../index2.html">Stu<b>Manager</a>
+		<a href="#">Stu<b>Manager</a>
 	</div>
 
 	<div class="register-box-body">

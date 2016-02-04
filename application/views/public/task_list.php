@@ -35,7 +35,9 @@
 			</div>
 
 			<div class="project-list animated bounceInDown">
+				<div class="table-responsive">
 				<?echo $tasklist;?>
+				</div>
 			</div>
 		</div>
 	</div>

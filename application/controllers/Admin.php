@@ -265,7 +265,7 @@ class Admin extends Login_Controller {
 	 * 用户管理-信息以json格式输出
 	 */
 	public function user_library_json(){
-		$userinfo = $this->User_model->select('','`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`,`group_id`');
+		$userinfo = $this->User_model->select('','`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`,`group_id`,`lastLoginTime`');
 		foreach($userinfo as $v){
 			$v['group_name']=$this->User_group_model->get_user_gruop_name($v['group_id']);
 			$userinfos[]=$v;
@@ -431,6 +431,20 @@ class Admin extends Login_Controller {
 		$this->load->view('siderbar',$this->page_data);
 		$this->load->view('admin/admin_user_edit',$this->page_data);
 	}
+//	public function saltpass(){
+//		$password = '888888';
+//		for($i=371;$i<=410;$i++){
+//			$r=$this->User_model->get_one("`id`=$i");
+//			$p=md5($password.$r['salt']);
+//			echo $p.'<br>';
+//			$this->User_model->update(array('password'=>$p),"`id`=$i");
+//			echo '<li>'.$salt[$i]=base64_encode(mcrypt_create_iv(32,MCRYPT_DEV_RANDOM)).'</li>';
+//		}
+//		foreach($salt as $v){
+//			echo '<li>'.md5($password.$v).'</li>';
+//		}
+
+//	}
 	/**
 	 * 用户管理-删除用户
 	 * user_delete

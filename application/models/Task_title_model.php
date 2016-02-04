@@ -26,7 +26,7 @@ class Task_title_model extends Base_Model {
 			$html .= '<tr>';
 			$html .= '
 								<td><a href="'.base_url('task').'/detail/task_id/'.$v['task_id'].'">'.$v['title'].'</a></td>
-								<td><i class="fa fa-clock-o"></i>&nbsp; '.date("Y年n月d日 - g:s a",strtotime($v['deadtime'])).' </td>
+								<td><i class="fa fa-clock-o"></i>&nbsp; '.date("y年n月d日 - H:s",strtotime($v['deadtime'])).' </td>
 								<td><span class="label label-';
 								switch($v['status']){
 									case '进行中' : $html.='danger';break;
@@ -98,14 +98,15 @@ class Task_title_model extends Base_Model {
 			$html.='<tr>';
 			$html.='<td>'.$key.'.</td>';
 //			$html.='<td>'.$val['list_order'].'</td>';
-			$html.='<td>'.$val['title'].'</td>';
+			$html.='<td><a href="'.base_url('task').'/detail/task_id/'.$val['task_id'].'">'.$val['title'].'</a></td>';
 			$html.='<td><div class="progress progress-xs active">
 										<div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'.$val['progress'].'" aria-valuemin="0" aria-valuemax="100" style="width: '.$val['progress'].'%">
 										</div>
 									</div>'.$val['progress'].'%</td>';
 			$html.='<td>'.$this->User_group_model->get_user_gruop_name($val['group_id']).'</td>';
-			$html.='<td>'.date("Y年n月d日 - g:s A",strtotime($val['posttime'])).'</td>';
-			$html.='<td>'.date("Y年n月d日 - g:s A",strtotime($val['deadtime'])).'</td>';
+			$html.='<td>'.$val['cate'].'</td>';
+			$html.='<td>'.date("y年n月d日 - H:s",strtotime($val['posttime'])).'</td>';
+			$html.='<td>'.date("y年n月d日 - H:s",strtotime($val['deadtime'])).'</td>';
 			$html .= '<td>
         <span class="label label-';
 			switch($val['status']){

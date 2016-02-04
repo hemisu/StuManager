@@ -22,7 +22,7 @@ class User_model extends Base_Model {
 	function check_student_id($student_id)
 	{
 		$c = $this->count("`student_id` ='".$student_id."'");
-		if($c>0){return false;}
+		if(!$c){return false;}
 		else{return true;}
 	}
 	function check_password($student_id,$password){

@@ -55,6 +55,7 @@
 						<th data-field="mz" data-align="center" data-sortable="true" data-visible="false">民族</th>
 						<th data-field="jg" data-align="center" data-sortable="true" data-visible="false">籍贯</th>
 						<th data-field="address" data-sortable="true" data-visible="false">家庭地址</th>
+						<th data-field="lastLoginTime" data-sortable="true" data-visible="false">最后登录时间</th>
 						<th data-field="operate" data-align="center" data-events="operateEvents" data-formatter="operateFormatter">操作</th>
 					</tr>
 					</thead>
@@ -104,9 +105,17 @@
 	function detailFormatter(index, row) {
 //		console.log(row);
 		var html = [];
-		html.push('<table style="text-align: center;background-color: #f4f4f4;">');
+		html.push('<table style="background-color: #f4f4f4;">');
 		$.each(row, function (key, value) {
-			html.push('<tr style="border-top: 1px solid #dddddd;"><td>' + key + '</td><td> ' + value + '</td></tr>');
+			if(key == 'long_phone'){
+				html.push('<tr style="border-top: 1px solid #dddddd;"><td width="80">' + key + '</td><td> <a href="tel:'+value+'">' + value + '</a></td></tr>');
+
+			}else if(key == 'short_phone'){
+				html.push('<tr style="border-top: 1px solid #dddddd;"><td width="80">' + key + '</td><td> <a href="tel:'+value+'">' + value + '</a></td></tr>');
+			}else{
+				html.push('<tr style="border-top: 1px solid #dddddd;"><td width="80">' + key + '</td><td> ' + value + '</td></tr>');
+			}
+
 		});
 		html.push('</table>');
 		return html.join('');

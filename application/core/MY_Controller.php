@@ -55,7 +55,7 @@ class Login_Controller extends MY_Controller
 		$this->load->helper('url');
 		$this->load->library('tree','session');
 		//======载入session======
-		$this->student_id = intval($this->session->userdata('student_id'));
+		$this->student_id = $this->session->userdata('student_id');
 		//======页面信息======
 		$this->page_data['controller_name']= trim($this->router->class);
 		$this->page_data['method_name']= trim($this->router->method);
@@ -75,11 +75,12 @@ class Login_Controller extends MY_Controller
 	 */
 	protected function check_member() {
 
-		$userinfo = $this->User_model->get_one(array('student_id'=>$this->student_id));
+		$userinfo = $this->User_model->get_one(array('student_id'=>"$this->student_id"));
 		if(!$userinfo)
 		{
 			$_SESSION['url_forward'] = 'http://'.$_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
 			$this->showmessage('请您重新登录',base_url('login'));
+			echo $this->student_id;
 			exit(0);
 		}else{
 			$this->page_data['userinfo'] = $userinfo;//获取用户信息
@@ -90,8 +91,8 @@ class Login_Controller extends MY_Controller
 	/**
 	 * 错误信息显示
 	 * @param $msg
-	 * @param string $url_next
-	 * @param string $url_forward
+	 * @param string $msg
+	 * @param string $next_url
 	 * @param int $s
 	 * @param string $dialog
 	 */

@@ -39,7 +39,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <body class="hold-transition login-page">
 <div class="login-box animated fadeInUp">
 	<div class="login-logo">
-		<a href="../../index2.html">Stu<b>Manager</b></a>
+		<a href="#">Stu<b>Manager</b></a>
 	</div><!-- /.login-logo -->
 	<div class="login-box-body">
 		<p class="login-box-msg">登陆</p>

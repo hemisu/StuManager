@@ -435,7 +435,9 @@ $config['csrf_exclude_uris'] = array(
 	'admin/announce_delete',
 	'jw/binding',
 	'login/login',
-	'user/check_password'
+	'user/check_password',
+	'task/user_username_json',
+	'file/avatar_upload/[0-9]+'//file
 );
 
 /*
