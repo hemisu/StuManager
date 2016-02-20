@@ -7,10 +7,81 @@ class Task_title_model extends Base_Model {
 		parent::__construct();
 	}
 	/*
-	 * 输出到dashboard的task_list
+	 * 输出到head中的task
 	 */
-	public function dashboard_html(){
-		$r = $this->select('','',5,'posttime DESC');
+	public function head_task_html($group_id){
+		$before_priv = $this->select('','','','posttime DESC');//权限筛选前
+		foreach($before_priv as $a){
+			unset($arr);
+			$arr=explode(',',$a['group_id']);
+			if($group_id == SUPERADMIN_GROUP_ID){
+				$r=$before_priv;
+				break;
+			}
+			foreach($arr as $b){
+				if($b == $group_id){
+					$r[]= $a;
+				}
+			}
+		}
+//		if(count($r)>5){array_slice($r,0,5);}
+//		$this->progress_color[array_rand($this->progress_color,1)];
+		$html  = '';
+		$html .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+								<i class="fa fa-flag-o"></i>
+								<span class="label label-danger">'.count($r).'</span>
+							</a>';
+		$html .= '<ul class="dropdown-menu">
+							<li class="header">你有 '.count($r).' 个任务</li>
+							<li>
+								<!-- inner menu: contains the actual data -->
+								<ul class="menu">
+								';
+		foreach($r as $v){
+		$html .= '
+									<li><!-- Task item -->
+										<a href="'.base_url('task/detail/task_id/'.$v['task_id']).'">
+											<h3>
+												'.$v['title'].'
+												<small class="pull-right">'.$v['progress'].'%</small>
+											</h3>
+											<div class="progress xs">
+												<div class="progress-bar progress-bar-'.$this->progress_color[array_rand($this->progress_color,1)].'" style="width: '.$v['progress'].'%" role="progressbar" aria-valuenow="'.$v['progress'].'" aria-valuemin="0" aria-valuemax="100">
+													<span class="sr-only">'.$v['progress'].'% Complete</span>
+												</div>
+											</div>
+										</a>
+									</li><!-- end task item -->';
+		}
+		$html .= '
+								</ul>
+							</li>
+							<li class="footer">
+								<a href="'.base_url('task').'">浏览所有的待办事项</a>
+							</li>
+						</ul>';
+		return $html;
+	}
+	/*
+	 * 输出到dashboard的task_list 根据权限显示
+	 */
+	public function dashboard_html($group_id){
+		$before_priv = $this->select('','','','posttime DESC');//权限筛选前
+		foreach($before_priv as $a){
+			unset($arr);
+			$arr=explode(',',$a['group_id']);
+			if($group_id == SUPERADMIN_GROUP_ID){
+				$r=$before_priv;
+				break;
+			}
+			foreach($arr as $b){
+				if($b == $group_id){
+					$r[]= $a;
+				}
+			}
+		}
+		if(count($r)>5){array_slice($r,0,5);}
+
 		$html  = '';
 		$html .= '<table class="table no-margin">
 								<thead>
@@ -45,8 +116,23 @@ class Task_title_model extends Base_Model {
 	/*
 	 * 输出到public中的task_list
 	 */
-	public function task_list_html(){
-		$r = $this->select('','','','posttime DESC');
+	public function task_list_html($group_id){
+		$before_priv = $this->select('','','','posttime DESC');//权限筛选前
+		foreach($before_priv as $a){
+			unset($arr);
+			$arr=explode(',',$a['group_id']);
+			if($group_id == SUPERADMIN_GROUP_ID){
+				$r=$before_priv;
+				break;
+			}
+			foreach($arr as $b){
+				if($b == $group_id){
+					$r[]= $a;
+				}
+			}
+		}
+		if(count($r)>5){array_slice($r,0,5);}
+
 		$html  = '';
 		$html .= '<table class="table table-hover"><tbody>';
 		foreach($r as $v){
@@ -67,15 +153,14 @@ class Task_title_model extends Base_Model {
 			$html .= '<td class="project-completion">
 									<small>当前进度： '.$v['progress'].'%</small>
 									<div class="progress progress-xs active">
-										<div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'.$v['progress'].'" aria-valuemin="0" aria-valuemax="100" style="width: '.$v['progress'].'%">
+										<div class="progress-bar progress-bar-'.$this->progress_color[array_rand($this->progress_color,1)].' progress-bar-striped" role="progressbar" aria-valuenow="'.$v['progress'].'" aria-valuemin="0" aria-valuemax="100" style="width: '.$v['progress'].'%">
 											<span class="sr-only">'.$v['progress'].'% Complete (warning)</span>
 										</div>
 									</div>
 								</td>';
 			$html .= '<td class="project-people">
-									<a href="projects.html"><img alt="image" class="img-circle" src="'.base_url("/public/AdminLTE2/dist/img").'/user6-128x128.jpg"></a>
-									<a href="projects.html"><img alt="image" class="img-circle" src="'.base_url("/public/AdminLTE2/dist/img").'/user5-128x128.jpg"></a>
-									<a href="projects.html"><img alt="image" class="img-circle" src="'.base_url("/public/AdminLTE2/dist/img").'/user1-128x128.jpg"></a>
+									<small>用户组：</small><br/>
+									<small>'.$this->User_group_model->get_user_gruop_name($v['group_id']).'</small>
 								</td>';
 			$html .= '<td class="project-actions">
 									<a href="'.base_url('task').'/detail/task_id/'.$v['task_id'].'" class="btn btn-white btn-sm"><i class="fa fa-folder"></i> 查看 </a>
@@ -100,7 +185,7 @@ class Task_title_model extends Base_Model {
 //			$html.='<td>'.$val['list_order'].'</td>';
 			$html.='<td><a href="'.base_url('task').'/detail/task_id/'.$val['task_id'].'">'.$val['title'].'</a></td>';
 			$html.='<td><div class="progress progress-xs active">
-										<div class="progress-bar progress-bar-primary progress-bar-striped" role="progressbar" aria-valuenow="'.$val['progress'].'" aria-valuemin="0" aria-valuemax="100" style="width: '.$val['progress'].'%">
+										<div class="progress-bar progress-bar-'.$this->progress_color[array_rand($this->progress_color,1)].' progress-bar-striped" role="progressbar" aria-valuenow="'.$val['progress'].'" aria-valuemin="0" aria-valuemax="100" style="width: '.$val['progress'].'%">
 										</div>
 									</div>'.$val['progress'].'%</td>';
 			$html.='<td>'.$this->User_group_model->get_user_gruop_name($val['group_id']).'</td>';
@@ -118,6 +203,38 @@ class Task_title_model extends Base_Model {
 			$html.='<td><a href="'.base_url('admin/task_list_edit').'/task_id/'.$val['task_id'].'" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> 编辑 </a> ';
 			$html .= '<a href="javascript:if(confirm(\'确定要删除吗\'))window.location.href=\''.base_url('admin/task_list').'_delete/task_id/'.$val['task_id'].'\';" class="btn btn-white btn-sm"><span class="glyphicon glyphicon-edit"></span> 删除</a></td>';
 		}
+		return $html;
+	}
+	/**
+	 * 输出到统计页面的selected
+	 */
+	function statistic_option($cate = '',$task_id='',$group_id){
+		$before_priv = $this->select(array('cate'=>$cate),'','','posttime DESC');//权限筛选前
+		foreach($before_priv as $a){
+			unset($arr);
+			$arr=explode(',',$a['group_id']);
+			if($group_id == SUPERADMIN_GROUP_ID){
+				$list=$before_priv;
+				break;
+			}
+			foreach($arr as $b){
+				if($b == $group_id){
+					$list[]= $a;
+				}
+			}
+		}
+		$html = '<div class="form-group">
+	            <label>事项选择</label>
+	            <select class="form-control cateoption">
+	            <option value="'.current_url().'">===选择需要查看的事项===</option>
+            ';
+		foreach($list as $v){
+			$html .= '<option value="'.base_url('statistic/'.$cate.'/task_id/'.$v['task_id']).'"';
+			if($task_id == $v['task_id']) $html .= 'selected';
+			$html .= '>'.$v['title'].'</option>';
+		}
+		$html .= '</select>
+           	 </div>';
 		return $html;
 	}
 }

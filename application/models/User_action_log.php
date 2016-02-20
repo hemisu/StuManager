@@ -24,8 +24,9 @@ class User_action_log extends Base_Model {
 	 * 返校统计类 html输出
 	 */
 	public function html_return_statistic($task_id){
-		$r=$this->select("`task_id`=$task_id");
+		$r=$this->select("`task_id`=$task_id",'','','datetime DESC');
 		$html = '';
+		$num=count($r);
 		foreach($r as $k=>$v){
 			$u = $this->User_model->get_one("`student_id`=$v[student_id]","`avatar`,`username`");//用户信息
 			$t = $this->Task_title_model->get_one("`task_id`=$task_id","`title`");//用户信息
@@ -34,7 +35,7 @@ class User_action_log extends Base_Model {
 									<img alt="image" class="img-circle" src="'.base_url("public/avatar/$u[avatar]").'">
 								</a>
 								<div class="media-body ">
-									<small class="pull-right">'.$k.'#</small>
+									<small class="pull-right">'.$num--.'#</small>
 									<strong>'.$u['username'].'</strong> 提交了 <strong>'.$t['title'].'</strong> .
 									<br>
 									<small class="text-muted"><time class="timeago" datetime="'.date('c',$v['datetime']).'"></time> 来自 '.$this->input->user_agent().'</small>

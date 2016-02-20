@@ -60,33 +60,5 @@
 
 <!-- ./wrapper -->
 
-<!-- pace.js -->
-<script>
-	var SITE_URL = "<?echo SITE_BASE;?>";//require.js
-	window.paceOptions = {
-		ajax: {
-			trackMethods: ['GET', 'POST', 'PUT', 'DELETE', 'REMOVE']
-		}
-	};
-</script>
-<script src="<?php echo base_url('/public/AdminLTE2/plugins/pace/pace.js');?>"></script>
-<!-- jQuery 2.1.4 -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/jQuery/jQuery-2.1.4.min.js"></script>
-<!-- Bootstrap 3.3.5 -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/bootstrap/js/bootstrap.min.js"></script>
-<!-- FastClick -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/fastclick/fastclick.min.js"></script>
-<!-- AdminLTE App -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/app.min.js"></script>
-<!-- SlimScroll 1.3.0 -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/slimScroll/jquery.slimscroll.min.js"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/pages/dashboard2.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/demo.js"></script>
-<!-- bootstrapValidator -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-validator/js/bootstrapValidator.min.js"></script>
-<!-- sco.message -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
 </body>
 </html>

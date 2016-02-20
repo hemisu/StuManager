@@ -437,7 +437,8 @@ $config['csrf_exclude_uris'] = array(
 	'login/login',
 	'user/check_password',
 	'task/user_username_json',
-	'file/avatar_upload/[0-9]+'//file
+	'file/avatar_upload/[0-9]+',//file
+	'circle/index',
 );
 
 /*

@@ -42,6 +42,7 @@
 						array('name'=>'username','type'=>'text','value'=>$edituserinfo['username'],'labelname'=>'姓名'),
 						array('name'=>'avatar','type'=>'hidden','value'=>$edituserinfo['avatar'],'labelname'=>'avatar'),
 						array('name'=>'atschool','type'=>'radio','value'=>$edituserinfo['atschool'],'labelname'=>'是否在校','option'=>array('0'=>'不在','1'=>'在校')),
+						array('name'=>'status','type'=>'text','value'=>$edituserinfo['status'],'labelname'=>'状态'),
 						array('name'=>'college','type'=>'text','value'=>$edituserinfo['college'],'labelname'=>'学院'),
 						array('name'=>'classes','type'=>'text','value'=>$edituserinfo['classes'],'labelname'=>'行政班级'),
 						array('name'=>'majoryear','type'=>'text','value'=>$edituserinfo['majoryear'],'labelname'=>'年级'),
@@ -132,40 +133,8 @@
 
 <!-- ./wrapper -->
 
-<!-- pace.js -->
-<script>
-	var SITE_URL = "<?echo SITE_BASE?>";//require.js
-	window.paceOptions = {
-		ajax: {
-			trackMethods: ['GET', 'POST', 'PUT', 'DELETE', 'REMOVE']
-		}
-	};
-</script>
-<script src="<?php echo base_url('/public/AdminLTE2/plugins/pace/pace.js');?>"></script>
-<!-- jQuery 2.1.4 -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/jQuery/jQuery-2.1.4.min.js"></script>
-<!-- Bootstrap 3.3.5 -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/bootstrap/js/bootstrap.min.js"></script>
-<!-- FastClick -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/fastclick/fastclick.min.js"></script>
-<!-- AdminLTE App -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/app.min.js"></script>
-<!-- SlimScroll 1.3.0 -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/slimScroll/jquery.slimscroll.min.js"></script>
-<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/pages/dashboard2.js"></script>
-<!-- AdminLTE for demo purposes -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/dist/js/demo.js"></script>
-<!-- bootstrapValidator -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-validator/js/bootstrapValidator.min.js"></script>
-<!-- sco.message -->
-<script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
 <!-- control -->
-<script src="<?php echo base_url();?>public/js/<?php echo $controller_name.'_'.$method_name;?>.js"></script>
-<script>
-	$(document).ready(function() {
+<script src="<?php echo base_url();?>public/js/admin/<?php echo $controller_name.'_'.$method_name;?>.js"></script>
 
-	});
-</script>
 </body>
 </html>

@@ -51,7 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			);
 			?>
 			<div class="form-group has-feedback">
-				<input type="text" class="form-control" name="student_id" placeholder="学号">
+				<input type="text" class="form-control" name="student_id" placeholder="学号" <?if($student_id)echo 'value="'.$student_id.'"';?>>
 				<span class="glyphicon glyphicon-user form-control-feedback"></span>
 			</div>
 			<div class="form-group has-feedback">
@@ -63,7 +63,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<div class="col-xs-8">
 					<div class="checkbox icheck">
 						<label>
-							<input type="checkbox" name="rememberme"> 记住我
+							<input type="checkbox" name="remembermyid" <?if($student_id)echo 'checked';?>> 记住我的账号
 						</label>
 					</div>
 				</div><!-- /.col -->
@@ -79,7 +79,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		</div>
 		<!-- /.social-auth-links-->
 
-		<a href="#">忘记密码?</a><br>
+		<a href="<?=base_url('login/forget');?>">忘记密码?</a><br>
 
 	</div><!-- /.login-box-body -->
 </div><!-- /.login-box -->
@@ -133,6 +133,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 							message: '密码不能为空'
 						}
 					}
+				},
+				remembermyid:{
+
 				}
 			}
 		})
@@ -158,7 +161,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 					}
 				}, 'json');
 			})
-			.find('input[name="rememberme"]')
+			.find('input[name="remembermyid"]')
 			// Init icheck elements
 			.iCheck({
 				// The tap option is only available in v2.0

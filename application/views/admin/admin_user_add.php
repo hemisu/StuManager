@@ -41,6 +41,7 @@
 						array('name'=>'username','type'=>'text','value'=>'','labelname'=>'姓名','placeholder'=>'姓名'),
 						array('name'=>'avatar','type'=>'hidden','value'=>'default.png','labelname'=>'avatar'),
 						array('name'=>'atschool','type'=>'radio','value'=>'','labelname'=>'是否在校','option'=>array('0'=>'不在','1'=>'在校')),
+						array('name'=>'status','type'=>'text','value'=>'','labelname'=>'状态','placeholder'=>'状态'),
 						array('name'=>'college','type'=>'text','value'=>'','labelname'=>'学院','placeholder'=>'学院全称.例：自动化与电气工程学院'),
 						array('name'=>'classes','type'=>'text','value'=>'','labelname'=>'行政班级','placeholder'=>'行政班级.例：电气工程及其自动化131'),
 						array('name'=>'majoryear','type'=>'text','value'=>'','labelname'=>'年级','placeholder'=>'年级.例：13'),
@@ -159,11 +160,6 @@
 <!-- sco.message -->
 <script src="<?php echo base_url('/public/AdminLTE2');?>/plugins/sco/js/sco.message.js"></script>
 <!-- control -->
-<script src="<?php echo base_url();?>public/js/<?php echo $controller_name.'_'.$method_name;?>.js"></script>
-<script>
-	$(document).ready(function() {
-
-	});
-</script>
+<script src="<?php echo base_url();?>public/js/admin/<?php echo $controller_name.'_'.$method_name;?>.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 $(document).ready(function(){
 	$(".textarea").wysihtml5();
-	$('.datetimepicker1').datetimepicker({
-		language:  'en',
+	$('#datetimepicker').datetimepicker({
+		language:  'zh-CN',
 		weekStart: 1,
 		todayBtn:  1,
 		autoclose: 1,
@@ -10,17 +10,7 @@ $(document).ready(function(){
 		forceParse: 0,
 		showMeridian: 1
 	});
-	$('.datetimepicker2').datetimepicker({
-		language:  'en',
-		weekStart: 1,
-		todayBtn:  1,
-		autoclose: 1,
-		todayHighlight: 1,
-		startView: 2,
-		forceParse: 0,
-		showMeridian: 1
-	});
-	$('#taskForm').bootstrapValidator({
+	$('#announceForm').bootstrapValidator({
 		framework: 'bootstrap',
 		icon: {
 			valid: 'glyphicon glyphicon-ok',
@@ -40,10 +30,10 @@ $(document).ready(function(){
 					}
 				}
 			},
-			group_id: {
+			content: {
 				validators: {
 					notEmpty: {
-						message: '用户组不能为空'
+						message: '内容不能为空'
 					}
 				}
 			}
@@ -59,10 +49,12 @@ $(document).ready(function(){
 		var bv = $form.data('bootstrapValidator');
 
 		// Use Ajax to submit form data
-
-		$.post($form.attr('action'), $form.serialize()+'&+group_id='+$(".select2").select2().val(), function (result) {
+		$.post($form.attr('action'), $form.serialize(), function (result) {
 			if (result.response === 'error') {
+
 				$.scojs_message('提交失败', $.scojs_message.TYPE_ERROR);
+				$('#bindingForm').data('formValidation').resetForm();
+
 			} else {
 				console.log(result);
 				$.scojs_message('提交成功', $.scojs_message.TYPE_OK);

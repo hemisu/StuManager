@@ -13,6 +13,8 @@ class MY_Controller extends CI_Controller
 		$this->config->load('stu');
 		$this->stu_status = $this->config->item('stu_status');
 		$this->stu_task = $this->config->item('stu_task');
+		$this->progress_color = $this->config->item('progress_color');
+
 	}
 
 }
@@ -20,16 +22,14 @@ class Base_Controller extends MY_Controller
 {
 	function __construct(){
 		parent::__construct();
-		$this->load->model(array('User_model','User_score_model','User_ranktest_model',
-			'Announce_model','Module_menu_model'));
+		$this->load->model(array('User_model','User_score_model','User_ranktest_model', 'Module_menu_model','Forget_password_model'));
 		$this->load->helper('url');
-		$this->load->library('tree','session');
+		$this->load->library('session');
 	}
 	/**
 	 * 错误信息显示
 	 * @param $msg
-	 * @param string $url_next
-	 * @param string $url_forward
+	 * @param string $next_url
 	 * @param int $s
 	 * @param string $dialog
 	 */
@@ -44,19 +44,20 @@ class Base_Controller extends MY_Controller
 		exit;
 	}
 }
-class Login_Controller extends MY_Controller
+class Login_Controller extends Base_Controller
 {
 	function __construct(){
 		parent::__construct();
 		//======载入模块======
 		$this->load->model(array('User_model','User_score_model','User_ranktest_model',
-			'Announce_model','Module_menu_model',
+			'Announce_model','Module_menu_model','Task_title_model',
 			'User_group_priv_model','User_group_model'));
 		$this->load->helper('url');
 		$this->load->library('tree','session');
 		//======载入session======
 		$this->student_id = $this->session->userdata('student_id');
 		//======页面信息======
+		$this->page_data['method_arr']=trim($this->router->method);
 		$this->page_data['controller_name']= trim($this->router->class);
 		$this->page_data['method_name']= trim($this->router->method);
 
@@ -127,4 +128,11 @@ class Login_Controller extends MY_Controller
 		return $this->group_id;
 	}
 
+}
+class Admin_Controller extends Login_Controller
+{
+	function __construct(){
+		define("IN_ADMIN", TRUE);
+		parent::__construct();
+	}
 }

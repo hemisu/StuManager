@@ -16,3 +16,4 @@ $config['stu_task'] = array (
 	'work_study_hours' => '勤工工时填写',
 
 );
+$config['progress_color']=array('green','aqua','light','red','yellow','muted');

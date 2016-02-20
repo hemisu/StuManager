@@ -15,7 +15,7 @@ $(document).ready(function(){
 
 	});
 	$('#datetimepicker').datetimepicker({
-		language:  'en',
+		language:  'zh-CN',
 		weekStart: 1,
 		todayBtn:  1,
 		autoclose: 1,

@@ -48,30 +48,33 @@ class Jw extends Base_Controller {
 		$this->ezcookie = '';
 		$results = curl_request($url,$post,'', 1);
 		$this->ezcookie = $results['cookie'];
-//	echo $results['cookie'];
+//print_r($results);
 	}
 	private function curl_request($url,$post='',$cookie='', $returnCookie=0){
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_TIMEOUT,500); // 500 seconds
+		curl_setopt($curl, CURLOPT_TIMEOUT,10); // 10 seconds
     curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)');
+		curl_setopt($curl, CURLOPT_REFERER, "$url"); //构造来路
     curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
     curl_setopt($curl, CURLOPT_AUTOREFERER, 1);
     curl_setopt($curl, CURLOPT_REFERER, "$url");
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE); // https请求 不验证证书和hosts
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
-		curl_setopt($curl, CURLOPT_COOKIE, $this->ezcookie);
+		curl_setopt($curl, CURLOPT_SSLVERSION, 3);
+
 
     if($post) {
         curl_setopt($curl, CURLOPT_POST, 1);
         curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post));
     }
     if($cookie) {
-	    curl_setopt($curl, CURLOPT_COOKIE, $cookie.';'.$this->ezcookie);
+	    curl_setopt($curl, CURLOPT_COOKIE, $cookie);
+    }else{
+	    curl_setopt($curl, CURLOPT_COOKIE, $this->ezcookie);
     }
 
     curl_setopt($curl, CURLOPT_HEADER, $returnCookie);
-    curl_setopt($curl, CURLOPT_TIMEOUT, 10);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
     $data = curl_exec($curl);
     if (curl_errno($curl)) {
@@ -87,6 +90,47 @@ class Jw extends Base_Controller {
     }else{
         return $data;
     }
+	}
+	private function curl_request2($url,$post='',$cookie='', $returnCookie=0){
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_TIMEOUT,5); // 5 seconds
+		curl_setopt($curl, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)');
+		curl_setopt($curl, CURLOPT_REFERER, "$url"); //构造来路
+		curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+		curl_setopt($curl, CURLOPT_AUTOREFERER, 1);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE); // https请求 不验证证书和hosts
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+		curl_setopt($curl, CURLOPT_SSLVERSION, 3);
+
+
+		if($post) {
+			curl_setopt($curl, CURLOPT_POST, 1);
+			curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($post));
+		}
+		if($cookie) {
+			curl_setopt($curl, CURLOPT_COOKIE, $cookie.';'.$this->ezcookie);
+		}else{
+			curl_setopt($curl, CURLOPT_COOKIE, $this->ezcookie);
+		}
+
+		curl_setopt($curl, CURLOPT_HEADER, $returnCookie);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+		$data = curl_exec($curl);
+		if (curl_errno($curl)) {
+			return curl_error($curl);
+		}
+		curl_close($curl);
+		if($returnCookie){
+			list($header, $body) = explode("\r\n\r\n", $data, 2);
+			preg_match_all("/Set\-Cookie:([^;]*);/", $header, $matches);
+			preg_match_all("/Set\-Cookie:([^;]*);/", $body, $matches2);
+			$info['cookie']  = substr($matches[1][0], 1).'; '.substr($matches2[0][2], 12).' '.$this->ezcookie.'';
+			$info['content'] = $body;
+			return $info;
+		}else{
+			return $data;
+		}
 	}
 	//获取__VIEWSTATE值
 	private function getView(){
@@ -121,11 +165,11 @@ class Jw extends Base_Controller {
 		$post['lbLanguage'] = '';
 		$post['RadioButtonList1'] = iconv('utf-8', 'gb2312', '学生');
 		$post['Button1'] = iconv('utf-8', 'gb2312', '登录');
-		$results = $this->curl_request($url,$post,'',1);
+		$results = $this->curl_request2($url,$post,'',1);
+//		print_r($results);
 		return $results['cookie'];
 //		echo $results['cookie'];
-//		$cookies=Array()
-//		print_r($results['cookie']);
+
 	}
 	/**
 	 * 个人信息查询
@@ -162,7 +206,7 @@ class Jw extends Base_Controller {
 	 * @param string $pwd
 	 * @return mixed
 	 */
-	public function information($xh,$pwd){
+	private function information($xh,$pwd){
 		header("Content-Type:text/html;charset=utf-8");
 		$cookie = $this->login($xh,$pwd);
 		$url = "http://jwxt.zust.edu.cn.ez.zust.edu.cn/xskbcx.aspx?xh=$xh";
@@ -175,7 +219,7 @@ class Jw extends Base_Controller {
 	/*
 	 * 获取成绩页面viewstate
 	 */
-	public function getViewchengji($xh,$pwd){
+	private function getViewchengji($xh,$pwd){
 		$res=array();
 		$url = "http://jwxt.zust.edu.cn.ez.zust.edu.cn/xscj_gc.aspx?xh=".$xh;
 		$cookie = $this->login($xh,$pwd);
@@ -183,62 +227,62 @@ class Jw extends Base_Controller {
 		$pattern = '/<input type="hidden" name="__VIEWSTATE" value="(.*?)" \/>/is';
 		preg_match_all($pattern, $result, $matches);
 		$res[0] = $matches[1][0];
+//		print_r($result);
 		return $res[0];
-//		print_r($res[0]);
 	}
 
 	public function chengji($xh,$pwd){
 		$cookie = $this->login($xh,$pwd);
+		echo $cookie;
 		$url = "http://jwxt.zust.edu.cn.ez.zust.edu.cn/xscj_gc.aspx?xh=".$xh;
-		$post['ddlXN'] = '';
-		$post['ddlXQ'] = '';
 		$post['Button2'] = '在校学习成绩查询';
 		$post['__VIEWSTATE'] = $this->getViewchengji($xh,$pwd);
+
 		$result = $this->curl_request($url,$post,$cookie);
-//		print_r($result);
-		$code = str_replace("\n",'',$result) ;
-////	preg_match_all("/(?<=<span id=\"pjxfjd\"><b>)平均学分绩点：(.*?)(?=<\/b><\/span>)/is",$code,$pjxfjd);//平均学分绩点
-////	echo $pjxfjd[1][0].'<br/>';//输出平均学分绩点
-		$datelist = strstr($code, '<table id="TabTj" width="100%">',true);
-		$tmp="/<tr.*>(.*)<\/tr>/iUs";
-		preg_match_all($tmp,$datelist,$macthes);
-
-		$tmp="/<td.*>(.*)<\/td>/iUs";
-		$structrue = array('schoolyear','term','classcode','coursename','nature','student_id','credit','points','score','minormark','makeup','rebuild','collegename','rebuildmark');//score数据结构
-		$score = array();
-		foreach($macthes[1] as $tr)
-		{
-			preg_match_all($tmp,$tr,$td);
-			$td[1][5] = $xh;//课程归属改为学号
-
-			switch($td[1][8]){
-				case '优秀':$td[1][8]=95;break;//五级制转化为百分制
-				case '良好':$td[1][8]=85;break;
-				case '中等':$td[1][8]=75;break;
-				case '及格':$td[1][8]=65;break;
-				case '不及格':$td[1][8]=0;break;
-				case '合格':$td[1][8]=85;break;//二级制转化为百分制
-				default:break;
-			}
-			for($i=0;$i<count($structrue);$i++){
-				$td[1][$structrue[$i]]=$td[1][$i];
-			}
-			$td[1]=array_slice($td[1], 14);
-			$score[]=$td[1];
-		}
-		unset($score[0]);
-//		return $score;
-//		echo "<pre>";
-//		print_r($score);
-		echo '<table>';
-		foreach($score as $v){
-			echo '<tr>';
-			foreach($v as $b){
-				echo '<td>'.$b.'</td>';
-			}
-			echo '</tr>';
-		}
-		echo '</table>';
+		print_r($result);
+//		$code = str_replace("\n",'',$result) ;
+//////	preg_match_all("/(?<=<span id=\"pjxfjd\"><b>)平均学分绩点：(.*?)(?=<\/b><\/span>)/is",$code,$pjxfjd);//平均学分绩点
+//////	echo $pjxfjd[1][0].'<br/>';//输出平均学分绩点
+//		$datelist = strstr($code, '<table id="TabTj" width="100%">',true);
+//		$tmp="/<tr.*>(.*)<\/tr>/iUs";
+//		preg_match_all($tmp,$datelist,$macthes);
+//
+//		$tmp="/<td.*>(.*)<\/td>/iUs";
+//		$structrue = array('schoolyear','term','classcode','coursename','nature','student_id','credit','points','score','minormark','makeup','rebuild','collegename','rebuildmark');//score数据结构
+//		$score = array();
+//		foreach($macthes[1] as $tr)
+//		{
+//			preg_match_all($tmp,$tr,$td);
+//			$td[1][5] = $xh;//课程归属改为学号
+//
+//			switch($td[1][8]){
+//				case '优秀':$td[1][8]=95;break;//五级制转化为百分制
+//				case '良好':$td[1][8]=85;break;
+//				case '中等':$td[1][8]=75;break;
+//				case '及格':$td[1][8]=65;break;
+//				case '不及格':$td[1][8]=0;break;
+//				case '合格':$td[1][8]=85;break;//二级制转化为百分制
+//				default:break;
+//			}
+//			for($i=0;$i<count($structrue);$i++){
+//				$td[1][$structrue[$i]]=$td[1][$i];
+//			}
+//			$td[1]=array_slice($td[1], 14);
+//			$score[]=$td[1];
+//		}
+//		unset($score[0]);
+////		return $score;
+////		echo "<pre>";
+////		print_r($score);
+//		echo '<table>';
+//		foreach($score as $v){
+//			echo '<tr>';
+//			foreach($v as $b){
+//				echo '<td>'.$b.'</td>';
+//			}
+//			echo '</tr>';
+//		}
+//		echo '</table>';
 	}
 	/*
 	 * 获取deng等级考试页面
@@ -274,8 +318,8 @@ class Jw extends Base_Controller {
 	}
 	public function binding(){
 		if(!$this->input->is_ajax_request()) exit('what are you 弄撒嘞?');
-		$jwinfo['student_id'] = $student_id = $this->security->xss_clean($this->input->post('student_id'));
-		$jwinfo['password'] = $this->security->xss_clean($this->input->post('password'));
+		$jwinfo['student_id'] = $student_id = $this->input->post('student_id');
+		$jwinfo['password'] = $this->input->post('password');
 		$jwget = $this->major($jwinfo['student_id'] ,$jwinfo['password']);
 		//无权限时访问路径
 		if(!empty($_SESSION['url_forward'])){$next_url=$_SESSION['url_forward'];}else{$next_url=base_url('dashboard');}
@@ -284,14 +328,15 @@ class Jw extends Base_Controller {
 		}
 		if(!empty($jwget['student_id'])){
 			$jwUserInfo=array(
-				'student_id' => $jwget['student_id'],
+				'student_id' => $student_id,
 				'username' => $jwget['name'],
 				'xy' => $jwget['xy'],
 				'majorclassnum' => $jwget['major'].$jwget['classnum'],
 				'next_url' => $next_url
 			);
 			$ip = $this->input->ip_address();
-			$this->User_model->update(array('jw_password'=>base64_encode($jwinfo['password']),'lastLoginIp'=>$ip,'lastLoginTime'=>date('Y-m-d H:i:s')),array('student_id'=>$jwget['student_id']));
+			$r = $this->User_model->get_one(array('student_id'=>$student_id));
+			$this->User_model->update(array('jw_password'=>base64_encode($jwinfo['password']),'lastLoginIp'=>$ip,'lastLoginTime'=>$r['lastLoginTime_temp'],'lastLoginTime_temp'=>date('Y-m-d H:i:s')),array('student_id'=>$jwget['student_id']));
 //			//保存成绩
 //			foreach($this->chengji($jwinfo['student_id'],$jwinfo['password']) as $scoreinfo){
 //				$r['student_id']=$student_id;$r['classcode']=$scoreinfo['classcode'];//查询条件
@@ -304,8 +349,8 @@ class Jw extends Base_Controller {
 //				$r['student_id']=$student_id;$r['ticket_number']=$secstr['ticket_number'];//查询条件
 //				if(!$this->User_ranktest_model->get_one($r)){$this->User_ranktest_model->set_insert($secstr);}
 //			}
-			echo json_encode($jwUserInfo);
 			$this->session->set_userdata($jwUserInfo);
+			echo json_encode($jwUserInfo);
 		}else{
 			echo json_encode(array('response' => false,'recontent'=>'用户名或者密码错误'));
 		}

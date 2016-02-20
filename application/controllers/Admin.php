@@ -1,13 +1,11 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Admin extends Login_Controller {
+class Admin extends Admin_Controller {
 
 	function __construct()
 	{
 		parent::__construct();
-		//======载入模块======
-		$this->load->model(array('Task_title_model'));
 	}
 	/**
 	 * 内容管理-公告-列表

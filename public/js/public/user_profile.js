@@ -1,5 +1,7 @@
 $(document).ready(function(){
-
+	if(window.location.hash == "#settings"){
+		$('#settingbtn').trigger("click");
+	}
 	$('#userinfopost').bootstrapValidator({
 		framework: 'bootstrap',
 		icon: {

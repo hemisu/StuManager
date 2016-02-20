@@ -56,7 +56,7 @@ class User extends Login_Controller {
 		}
 		$this->load->view('head',$this->page_data);
 		$this->load->view('siderbar',$this->page_data);
-		$this->load->view('public/profile',$this->page_data);
+		$this->load->view('public/user_profile',$this->page_data);
 	}
 	/*
 	 * 学分绩点（来自教务系统）
@@ -92,6 +92,6 @@ class User extends Login_Controller {
 	public function check_student_id(){
 		if(!$this->input->is_ajax_request()) exit('what are you 弄撒嘞?');
 		$student_id = $this->input->get_post('student_id');
-		echo json_encode(array('valid' => $this->User_model->check_student_id($student_id)));
+		echo json_encode(array('valid' => !$this->User_model->check_student_id($student_id)));
 	}
 }

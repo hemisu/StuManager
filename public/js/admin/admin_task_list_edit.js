@@ -1,7 +1,14 @@
 $(document).ready(function(){
+	$(".select2").select2(
+		{
+			theme: "classic"
+		}
+	);
+	/* BOOTSTRAP SLIDER */
+	$('.slider').slider();
 	$(".textarea").wysihtml5();
 	$('.datetimepicker1').datetimepicker({
-		language:  'en',
+		language:  'zh-CN',
 		weekStart: 1,
 		todayBtn:  1,
 		autoclose: 1,
@@ -11,7 +18,7 @@ $(document).ready(function(){
 		showMeridian: 1
 	});
 	$('.datetimepicker2').datetimepicker({
-		language:  'en',
+		language:  'zh-CN',
 		weekStart: 1,
 		todayBtn:  1,
 		autoclose: 1,
