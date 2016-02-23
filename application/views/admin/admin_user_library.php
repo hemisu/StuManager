@@ -55,7 +55,7 @@
 						<th data-field="mz" data-align="center" data-sortable="true" data-visible="false">民族</th>
 						<th data-field="jg" data-align="center" data-sortable="true" data-visible="false">籍贯</th>
 						<th data-field="address" data-sortable="true" data-visible="false">家庭地址</th>
-						<th data-field="lastLoginTime" data-sortable="true" data-visible="false">最后登录时间</th>
+						<th data-field="lastLoginTime_temp" data-sortable="true" data-visible="false">最后登录时间</th>
 						<th data-field="operate" data-align="center" data-events="operateEvents" data-formatter="operateFormatter">操作</th>
 					</tr>
 					</thead>

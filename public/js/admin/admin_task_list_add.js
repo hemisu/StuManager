@@ -66,6 +66,7 @@ $(document).ready(function(){
 		$.post($form.attr('action'), $form.serialize()+'&+group_id='+$(".select2").select2().val(), function (result) {
 			if (result.response === 'error') {
 				$.scojs_message('提交失败', $.scojs_message.TYPE_ERROR);
+				$.GoUrl(result.next_url, 1);
 			} else {
 				console.log(result);
 				$.scojs_message('提交成功', $.scojs_message.TYPE_OK);

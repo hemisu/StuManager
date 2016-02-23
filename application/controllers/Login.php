@@ -19,16 +19,21 @@ class Login extends Base_Controller {
 	public function forget_setpassword($student_id,$forgetvalidate){
 		$r=$this->Forget_password_model->get_one(array('student_id'=>$student_id,'forgetvalidate'=>$forgetvalidate));
 		if(!$r)exit($this->showmessage('无效操作！',base_url('login'),3));
-		if($this->input->is_ajax_request()){
-			$newpassword=$this->input->post('password');
-			$user = $this->User_model->get_one(array('student_id'=>$student_id));
-			$password = md5($newpassword.$user['salt']);//加salt后的密码
-			if($this->User_model->update(array('password'=>$password),array('student_id'=>$student_id))){
-				$this->Forget_password_model->delete(array('student_id'=>$student_id,'forgetvalidate'=>$forgetvalidate));
-				exit (json_encode(array('status'=>true,'tips'=>'密码修改成功','next_url'=>base_url('login'))));
-			}else{
-				exit (json_encode(array('status'=>false,'tips'=>'密码修改失败','next_url'=>current_url())));
+		if( (time()-strtotime($r['date']))<0 ){//未超过30分钟
+			if($this->input->is_ajax_request()){
+				$newpassword=$this->input->post('password');
+				$user = $this->User_model->get_one(array('student_id'=>$student_id));
+				$password = md5($newpassword.$user['salt']);//加salt后的密码
+				if($this->User_model->update(array('password'=>$password),array('student_id'=>$student_id))){
+					$this->Forget_password_model->delete(array('student_id'=>$student_id,'forgetvalidate'=>$forgetvalidate));
+					exit (json_encode(array('status'=>true,'tips'=>'密码修改成功','next_url'=>base_url('login'))));
+				}else{
+					exit (json_encode(array('status'=>false,'tips'=>'密码修改失败','next_url'=>current_url())));
+				}
 			}
+		}else{
+			$this->Forget_password_model->delete(array('student_id'=>$student_id));
+			exit (json_encode(array('status'=>false,'tips'=>'密码修改失败,验证码超时，请重新发送邮件','next_url'=>current_url())));
 		}
 		$this->page_data['student_id'] = $student_id;
 		$this->load->view('public/forget_setpassword',$this->page_data);
@@ -54,25 +59,27 @@ class Login extends Base_Controller {
 	private function sent_forget_email($student_id){
 		$r=$this->Forget_password_model->get_one(array('student_id'=>$student_id));
 		if($r){//存在
-			if( (time()-strtotime($r['date']))<0 ){
+			if( (time()-strtotime($r['date']))<0 ){//未超过30分钟
 				exit( json_encode(array('status'=>false,'tips'=>'已发送邮件，请勿重复操作','next_url'=>base_url('login/forget'))) );//防止重复提交,保存时间超过现在时间
-			}else{
+			}else{//已超过30分钟
 				$this->Forget_password_model->delete(array('student_id'=>$student_id));
 			}
 		}
-
-		$forgetvalidate= md5(time().$student_id);;
+		$email_exist = $this->User_model->get_one(array('student_id'=>$student_id));
+		if(empty($email_exist['email']))exit( json_encode(array('status'=>false,'tips'=>'未填写邮箱，请先完善您的邮箱地址','next_url'=>base_url('login/forget'))) );
+		$forgetvalidate= md5(time().$student_id);
+		$config_email_126 = $this->config->item('email_126');//载入邮件配置
 		$config['protocol'] = 'smtp';
-		$config['smtp_host'] = 'smtp.126.com';
-		$config['smtp_user'] = 'hekunyu@126.com';
-		$config['smtp_pass'] = '0gaza14713a';
+		$config['smtp_host'] = $config_email_126['smtp_host'];
+		$config['smtp_user'] = $config_email_126['smtp_user'];
+		$config['smtp_pass'] = $config_email_126['smtp_pass'];
 		$config['charset'] = 'utf-8';
 		$config['wordwrap'] = TRUE;
 		$config['mailtype'] = 'html';
 		$this -> load -> library('email');
 		$this->email->initialize($config);
 		$this->email->from('hekunyu@126.com');
-		$this->email->to('hemisu@qq.com');
+		$this->email->to($email_exist['email']);
 		$this->email->subject('【StuManager】忘记密码重置!');
 		$this->email->message('重置你的密码：<a href="'.base_url('login/forget_setpassword/'.$student_id).'/'.$forgetvalidate.'">点击链接</a><br/>请在30分钟内重置。');
 
@@ -80,7 +87,7 @@ class Login extends Base_Controller {
 			exit( json_encode(array('status'=>false,'tips'=>'邮件发送失败,请联系管理员：hemisu@qq.com','netx_url'=>base_url('login'))) );
 		}else{
 			$this->Forget_password_model->insert(array('student_id'=>$student_id,'forgetvalidate'=>$forgetvalidate,'date'=>date("Y-m-d G:i:s",time()+1800)));
-			exit( json_encode(array('tips'=>'邮件已发送到您的邮箱，请查收','netx_url'=>base_url('login'))) );
+			exit( json_encode(array('tips'=>'邮件已发送到您的邮箱，请查收','next_url'=>base_url('login'))) );
 		}
 	}
 	/**

@@ -161,7 +161,7 @@ class User_group_model extends Base_Model {
 	/**
 	 * 获取用户组名称
 	 * @param $group_id
-	 * @return $html
+	 * @return string
 	 */
 	public function get_user_gruop_name($group_id){
 		$s = $this->select();

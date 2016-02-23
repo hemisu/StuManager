@@ -7,6 +7,9 @@ class Admin extends Admin_Controller {
 	{
 		parent::__construct();
 	}
+	public function index(){
+		$this->showmessage('一片荒芜。。');
+	}
 	/**
 	 * 内容管理-公告-列表
 	 * announce
@@ -105,11 +108,41 @@ class Admin extends Admin_Controller {
 		if($this->input->is_ajax_request()){
 //			$data=array();
 //			$this->Announce_model->insert($data);
-			$data=$this->input->post();
-			unset($data['_wysihtml5_mode']);
+			$data['title'] = $title = $this->input->post('title');
+			$data['group_id'] = $this->input->post('group_id');
+			$data['cate'] = $this->input->post('cate');
+			$data['posttime'] = $this->input->post('posttime');
+			$data['deadtime'] = $this->input->post('deadtime');
+			$data['progress'] = $this->input->post('progress');
+			$data['status'] = $this->input->post('status');
+			$data['author'] = $this->input->post('author');
+			$data['description'] = $description = $this->input->post('description');
 
-			$this->Task_title_model->insert($data);
-			exit(json_encode(array('next_url'=>base_url('admin/task_list'))));
+			$insert_id = $this->Task_title_model->insert($data);
+
+			if($this->input->post('sent_mail_to')){
+				if(isset($data['group_id'])){
+					$arr=explode(',',$data['group_id']);
+					foreach($arr as $group_id){
+						$userlist[]=$this->User_model->select(array('group_id'=>$group_id),'`student_id`,`email`,`group_id`');
+					}
+				}
+				$email = '';
+				foreach($userlist as $c){
+					foreach($c as $d) {
+						if(empty($email)){
+							$email = $d['email'];
+						}else{
+							$email .= ','.$d['email'];
+						}
+					}
+				}
+
+//				print_r($userlist);
+//echo $email;
+				$response = $this->sent_email($email, "【StuManager】新事项：$title", "$description 查看<a href='".base_url('task/detail/task_id/'.$insert_id)."'>点击链接</a>", base_url('admin/task_list'));
+			}
+			exit(json_encode(array('next_url'=>base_url('admin/task_list'),'response'=> $response)));
 		}
 		$this->page_data['group_select']=$this->User_group_model->get_user_gruop_select();
 		$this->load->view('head',$this->page_data);
@@ -263,7 +296,7 @@ class Admin extends Admin_Controller {
 	 * 用户管理-信息以json格式输出
 	 */
 	public function user_library_json(){
-		$userinfo = $this->User_model->select('','`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`,`group_id`,`lastLoginTime`');
+		$userinfo = $this->User_model->select('','`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`,`group_id`,`lastLoginTime_temp`');
 		foreach($userinfo as $v){
 			$v['group_name']=$this->User_group_model->get_user_gruop_name($v['group_id']);
 			$userinfos[]=$v;
@@ -454,5 +487,111 @@ class Admin extends Admin_Controller {
 		}else{
 			echo json_encode(array('response'=> false));
 		}
+	}
+	/*
+	 * 邮件发送
+	 */
+	private function sent_email($email,$title,$content){
+//		$config_email_126 = $this->config->item('email_126');//载入邮件配置
+//		$config['protocol'] = 'smtp';
+//		$config['smtp_host'] = $config_email_126['smtp_host'];
+//		$config['smtp_user'] = $config_email_126['smtp_user'];
+//		$config['smtp_pass'] = $config_email_126['smtp_pass'];
+//		$config['charset'] = 'utf-8';
+//		$config['wordwrap'] = TRUE;
+//		$config['mailtype'] = 'html';
+//		$this -> load -> library('email');
+//		$this->email->initialize($config);
+//		$this->email->from('hekunyu@126.com');
+//		$this->email->to($email);
+//		$this->email->subject($title);
+//		$this->email->message($content);
+
+		$accesskey=$this->config->item('aliyunAccess');
+		include_once BASEPATH.'sdk/aliyun-php-sdk-core/Config.php';
+		$iClientProfile = DefaultProfile::getProfile("cn-hangzhou", $accesskey['KeyID'], $accesskey['Secret']);
+		$client = new DefaultAcsClient($iClientProfile);
+		$request = new Dm\Request\V20151123\SingleSendMailRequest();
+		$request->setAccountName("hekunyu@mail.hemisu.com");
+		$request->setAddressType(1);
+		$request->setTagName("forget");
+		$request->setReplyToAddress("true");
+		$request->setToAddress("$email");
+		$request->setSubject("$title");
+		$request->setHtmlBody("$content");
+		$response = $client->getAcsResponse($request);
+
+//		if( ! $this->email->send()){
+//			return false;
+//		}else{
+//			return true;
+//		}
+		return $response;
+	}
+	/*
+	 * 数据备份
+	 */
+	public function database_bak(){
+		$this->load->model('Database_bak_model');
+		//载入模块
+		if($this->input->post('bak')){
+			// Load the DB utility class
+			$this->load->dbutil();
+			$tables = $this->db->list_tables();
+			$prefs = array(
+				'tables'    => $tables,   // Array of tables to backup.
+				'ignore'    => array(),         // List of tables to omit from the backup
+				'format'    => 'zip',           // gzip, zip, txt
+				'filename'  => 'StuManager_backup_'.date('Y_m_d H_i_s',time()).'.sql',      // File name - NEEDED ONLY WITH ZIP FILES
+				'add_drop'  => TRUE,            // Whether to add DROP TABLE statements to backup file
+				'add_insert'    => TRUE,            // Whether to add INSERT data to backup file
+				'newline'   => "\n"             // Newline character used in backup file
+			);
+// Backup your entire database and assign it to a variable
+			$backup = $this->dbutil->backup($prefs);
+
+// Load the file helper and write the file to your server
+			$this->load->helper('file');
+			write_file(FCPATH.'public/bak/StuManager_backup_'.date('Y_m_d H_i_s',time()).'.zip', $backup);
+			$this->Database_bak_model->insert(array('bakname'=>'StuManager_backup_'.date('Y_m_d H_i_s',time()).'.zip','bakdate'=>date('Y-m-d H:i:s',time()),'valid'=>md5(time())));
+			redirect(current_url());
+		}
+
+		// Load the download helper and send the file to your desktop
+//		$this->load->helper('download');
+//		force_download('mybackup.zip', $backup);
+//
+//$tables = $this->db->list_tables();
+//
+//foreach ($tables as $table)
+//{
+//	echo $table.'<br />';
+//}
+		$this->page_data['database_bak_table'] = $this->Database_bak_model->html_database_bac_list();
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('admin/admin_database_bak',$this->page_data);
+	}
+	/*
+	 * 数据备份删除
+	 */
+	public function database_bak_del($id = '',$valid = ''){
+		$this->load->model('Database_bak_model');
+		//载入模块
+		$this->load->helper('file');
+
+		//载入文件模块
+		if(empty($id)||empty($valid))exit($this->showmessage('参数错误'));
+		if($r = $this->Database_bak_model->get_one(array('id'=>$id,'valid'=>$valid))){
+			if( !unlink(FCPATH."public/bak/".$r['bakname']) ){
+				$this->showmessage('删除文件失败');
+			}
+			$this->Database_bak_model->delete(array('id'=>$id,'valid'=>$valid));
+
+			//查询并删除
+		}else{
+			$this->showmessage('查询失败');
+		}
+		redirect(base_url('admin/database_bak'));
 	}
 }

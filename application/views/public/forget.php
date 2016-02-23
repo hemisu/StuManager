@@ -51,7 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			);
 			?>
 			<div class="form-group has-feedback">
-				<input type="text" class="form-control" name="student_id" <?if($student_id)echo 'value="'.$student_id.'"';?> >
+				<input type="text" class="form-control" name="student_id" placeholder="学号" <?if($student_id)echo 'value="'.$student_id.'"';?> >
 				<span class="glyphicon glyphicon-user form-control-feedback"></span>
 			</div>
 			<div class="form-group has-feedback">

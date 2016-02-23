@@ -50,6 +50,14 @@
 										<?=$group_select;?>
 									</select>
 								</div><!-- /.form-group -->
+								<div class="form-group">
+									<div class="checkbox">
+										<label>
+											<input type="checkbox" name="sent_mail_to">
+											发送邮件
+										</label>
+									</div>
+								</div>
 							</div>
 							<div class="col-lg-6">
 								<div class="form-group">

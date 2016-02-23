@@ -51,7 +51,9 @@ class Login_Controller extends Base_Controller
 		//======载入模块======
 		$this->load->model(array('User_model','User_score_model','User_ranktest_model',
 			'Announce_model','Module_menu_model','Task_title_model',
-			'User_group_priv_model','User_group_model'));
+			'User_group_priv_model','User_group_model',
+			'Validmail_model'
+		));
 		$this->load->helper('url');
 		$this->load->library('tree','session');
 		//======载入session======
@@ -99,7 +101,14 @@ class Login_Controller extends Base_Controller
 	 */
 	protected function showmessage($msg, $next_url = '',$s = 2, $dialog = '') {
 
-		if($next_url=='')$next_url=$_SERVER['HTTP_REFERER'];//获取当前链接的上一个连接的来源地址
+		if($next_url==''){
+			if(!isset($_SERVER['HTTP_REFERER'])){
+				$next_url=base_url('dashboard');
+			}else{
+				$next_url=$_SERVER['HTTP_REFERER'];
+			}
+
+		}//获取当前链接的上一个连接的来源地址
 
 		$pagedata = array("msg"=>$msg,"next_url"=>$next_url,"s"=>$s,"dialog"=>$dialog);
 
@@ -134,5 +143,7 @@ class Admin_Controller extends Login_Controller
 	function __construct(){
 		define("IN_ADMIN", TRUE);
 		parent::__construct();
+		//====模块加载====
+		$this->load->dbutil();//数据库操作类
 	}
 }

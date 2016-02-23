@@ -17,3 +17,25 @@ $config['stu_task'] = array (
 
 );
 $config['progress_color']=array('green','aqua','light','red','yellow','muted');
+/*
+ * 阿里云Access
+ */
+$config['aliyunAccess'] = array (
+	'KeyID' => 'heePH42PYly0tbWt',
+	'Secret' => 'mzb0pkTEJNPYxPBFIBaNUFaEw4Vl51',
+);
+/*
+ * 七牛云Access
+ */
+$config['qiniuAccess'] = array (
+	'accessKey' => 'u2Yv3iO5kpgK9j-hKkBFtvHY14XMg_6yCaZwIA3k',
+	'secretKey' => 'JnQuR9BrKSIWeRcj-ei1EUh4trj0EdI02IFX2Yt9'
+);
+/*
+ * 126邮箱
+ */
+$config['email_126'] = array(
+	'smtp_host' => 'smtp.126.com',
+	'smtp_user' => 'hekunyu@126.com',
+	'smtp_pass' => '0gaza14713a'
+);

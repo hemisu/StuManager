@@ -122,6 +122,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<img class="profile-user-img img-responsive img-circle" src="<?echo base_url('/public/avatar').'/'.$userinfo['avatar'];?>" alt="User profile picture" data-toggle="modal" data-target="#avatarModal">
 				<h3 class="profile-username text-center"><?echo isset($userinfo['username']) ? $userinfo['username']: "Data Error:@param:userinfo";?></h3>
 				<p class="text-muted text-center"><?=$this->User_group_model->get_user_gruop_name($userinfo['group_id']);?></p>
+				<?if(!$userinfo['check_email']){
+					echo '<p class="text-muted text-center"><a href="'.base_url('user/validmail/'.$userinfo['student_id']).'"> <i class="fa fa-fw fa-circle text-red" ></i>邮箱未验证,点击验证</a></p>';
+					}
+				?>
 
 				<ul class="list-group list-group-unbordered">
 					<li class="list-group-item">

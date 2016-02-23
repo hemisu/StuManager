@@ -94,4 +94,60 @@ class User extends Login_Controller {
 		$student_id = $this->input->get_post('student_id');
 		echo json_encode(array('valid' => !$this->User_model->check_student_id($student_id)));
 	}
+	/*
+	 * 验证邮箱 发送
+	 */
+	public function validmailsuccess($student_id,$forgetvalidate){
+		$r=$this->Validmail_model->get_one(array('student_id'=>$student_id,'forgetvalidate'=>$forgetvalidate));
+		if(!$r)exit($this->showmessage('无效操作！',base_url('dashboard')));
+		if( (time()-strtotime($r['date']))<0 ){//未超过30分钟
+			if($this->User_model->update(array('check_email'=>1),array('student_id'=>$student_id))){
+				$this->Validmail_model->delete(array('student_id'=>$student_id,'forgetvalidate'=>$forgetvalidate));
+				$this->showmessage('邮件验证成功',base_url('dashboard'));
+			}else{
+				$this->showmessage('邮件验证失败',base_url('dashboard'));
+			}
+		}else{
+			$this->Validmail_model->delete(array('student_id'=>$student_id));
+			$this->showmessage('验证失败,验证码超时，请重新发送邮件',base_url('dashboard'));
+		}
+	}
+	/*
+	 * 邮件发送
+	 */
+	public function validmail($student_id){
+		$r=$this->Validmail_model->get_one(array('student_id'=>$student_id));
+		if($r){//存在
+			if( (time()-strtotime($r['date']))<0 ){
+				$this->showmessage('已发送邮件，请勿重复操作');
+				//防止重复提交,保存时间超过现在时间
+			}else{
+				$this->Validmail_model->delete(array('student_id'=>$student_id));
+			}
+		}
+		$email_exist = $this->User_model->get_one(array('student_id'=>$student_id));
+		if(empty($email_exist['email']))$this->showmessage('未填写邮箱，请先完善您的邮箱地址',base_url('user/profile'));
+		$forgetvalidate= md5(time().$student_id);
+		$config_email_126 = $this->config->item('email_126');//载入邮件配置
+		$config['protocol'] = 'smtp';
+		$config['smtp_host'] = $config_email_126['smtp_host'];
+		$config['smtp_user'] = $config_email_126['smtp_user'];
+		$config['smtp_pass'] = $config_email_126['smtp_pass'];
+		$config['charset'] = 'utf-8';
+		$config['wordwrap'] = TRUE;
+		$config['mailtype'] = 'html';
+		$this -> load -> library('email');
+		$this->email->initialize($config);
+		$this->email->from('hekunyu@126.com');
+		$this->email->to($email_exist['email']);
+		$this->email->subject('【StuManager】验证邮件!');
+		$this->email->message('验证你的邮箱：<a href="'.base_url('user/validmailsuccess/'.$student_id).'/'.$forgetvalidate.'">点击链接</a><br/>请在30分钟内验证。');
+
+		if( ! $this->email->send()){
+			$this->showmessage('邮件发送失败,请联系管理员：hemisu@qq.com');
+		}else{
+			$this->Validmail_model->insert(array('student_id'=>$student_id,'forgetvalidate'=>$forgetvalidate,'date'=>date("Y-m-d G:i:s",time()+1800)));
+			$this->showmessage('邮件已发送到您的邮箱，请查收');
+		}
+	}
 }
