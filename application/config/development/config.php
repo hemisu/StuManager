@@ -439,6 +439,8 @@ $config['csrf_exclude_uris'] = array(
 	'task/user_username_json',
 	'file/avatar_upload/[0-9]+',//file
 	'circle/index',
+	'api/.*?',
+	'wangbin/post' //王斌老师的额外程序
 );
 
 /*
@@ -506,3 +508,5 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
+
+$config['site_name'] = '';

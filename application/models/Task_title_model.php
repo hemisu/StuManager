@@ -6,11 +6,23 @@ class Task_title_model extends Base_Model {
 		$this->page_size = 20;
 		parent::__construct();
 	}
+	public function progress_time($v){
+		//统计所占日期百分比
+		$proportion = 0 ;//时间所占百分比
+		$differtime = strtotime($v['deadtime'])-strtotime($v['posttime']);
+		if( (strtotime($v['deadtime'])-time()) >0 ){//未到时间
+			$proportion = round( (time()-strtotime($v['posttime']))/$differtime ,1);
+		}else{
+			$proportion = 100;
+		}
+		return $proportion;
+	}
 	/*
 	 * 输出到head中的task
 	 */
 	public function head_task_html($group_id){
 		$before_priv = $this->select('','','','posttime DESC');//权限筛选前
+		//权限筛选
 		foreach($before_priv as $a){
 			unset($arr);
 			$arr=explode(',',$a['group_id']);
@@ -38,16 +50,17 @@ class Task_title_model extends Base_Model {
 								<ul class="menu">
 								';
 		foreach($r as $v){
-		$html .= '
+			$proportion = $this->progress_time($v);
+			$html .= '
 									<li><!-- Task item -->
 										<a href="'.base_url('task/detail/task_id/'.$v['task_id']).'">
 											<h3>
 												'.$v['title'].'
-												<small class="pull-right">'.$v['progress'].'%</small>
+												<small class="pull-right">'.$proportion.'%</small>
 											</h3>
 											<div class="progress xs">
-												<div class="progress-bar progress-bar-'.$this->progress_color[array_rand($this->progress_color,1)].'" style="width: '.$v['progress'].'%" role="progressbar" aria-valuenow="'.$v['progress'].'" aria-valuemin="0" aria-valuemax="100">
-													<span class="sr-only">'.$v['progress'].'% Complete</span>
+												<div class="progress-bar progress-bar-'.$this->progress_color[array_rand($this->progress_color,1)].'" style="width: '.$proportion.'%" role="progressbar" aria-valuenow="'.$proportion.'" aria-valuemin="0" aria-valuemax="100">
+													<span class="sr-only">'.$proportion.'% Complete</span>
 												</div>
 											</div>
 										</a>
@@ -99,12 +112,18 @@ class Task_title_model extends Base_Model {
 								<td><a href="'.base_url('task').'/detail/task_id/'.$v['task_id'].'">'.$v['title'].'</a></td>
 								<td><i class="fa fa-clock-o"></i>&nbsp; '.date("y年n月d日 - H:s",strtotime($v['deadtime'])).' </td>
 								<td><span class="label label-';
-								switch($v['status']){
-									case '进行中' : $html.='danger';break;
-									case '已完成' : $html.='success';break;
-									default:break;
+								if(time()-strtotime($v['deadtime']) <0){
+									$html.='danger';
+								}else{
+									$html.='success';
 								}
-			$html .= '">'.$v['status'].'</span></td>
+			$html .= '">';
+								if(time()-strtotime($v['deadtime']) <0){
+									$html.='进行中';
+								}else{
+									$html.='已完成';
+								}
+			$html .= '</span></td>
 								<td>-</td>';
 			$html .= '</tr>';
 		}
@@ -136,25 +155,32 @@ class Task_title_model extends Base_Model {
 		$html  = '';
 		$html .= '<table class="table table-hover"><tbody>';
 		foreach($r as $v){
+			$proportion = $this->progress_time($v);
 			$html .= '<tr>';
 			$html .= '<td class="project-status">
         <span class="label label-';
-			switch($v['status']){
-				case '进行中' : $html.='danger';break;
-				case '已完成' : $html.='success';break;
-				default:break;
+			if(time()-strtotime($v['deadtime']) <0){
+				$html.='danger';
+			}else{
+				$html.='success';
 			}
-			$html .= '">'.$v['status'].' </span></td>';
+			$html .= '">';
+			if(time()-strtotime($v['deadtime']) <0){
+				$html.='进行中';
+			}else{
+				$html.='已完成';
+			}
+			$html .= '</span></td>';
 			$html .= '<td class="project-title">
 									<a href="'.base_url('task').'/detail/task_id/'.$v['task_id'].'">'.$v['title'].'</a>
 									<br>
 									<small>创建于 '.$v['deadtime'].'</small>
 								</td>';
 			$html .= '<td class="project-completion">
-									<small>当前进度： '.$v['progress'].'%</small>
+									<small>当前进度： '.$proportion.'%</small>
 									<div class="progress progress-xs active">
-										<div class="progress-bar progress-bar-'.$this->progress_color[array_rand($this->progress_color,1)].' progress-bar-striped" role="progressbar" aria-valuenow="'.$v['progress'].'" aria-valuemin="0" aria-valuemax="100" style="width: '.$v['progress'].'%">
-											<span class="sr-only">'.$v['progress'].'% Complete (warning)</span>
+										<div class="progress-bar progress-bar-'.$this->progress_color[array_rand($this->progress_color,1)].' progress-bar-striped" role="progressbar" aria-valuenow="'.$proportion.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$proportion.'%">
+											<span class="sr-only">'.$proportion.'% Complete (warning)</span>
 										</div>
 									</div>
 								</td>';
@@ -180,26 +206,33 @@ class Task_title_model extends Base_Model {
 		$html = '';
 		$list = $this->listinfo('','*','posttime DESC' , $page_now, $this->page_size,'',$this->page_size,page_list_url('admin/task_list',true));
 		foreach($list as $key=>$val){
+			$proportion = $this->progress_time($val);
 			$html.='<tr>';
 			$html.='<td>'.$key.'.</td>';
 //			$html.='<td>'.$val['list_order'].'</td>';
 			$html.='<td><a href="'.base_url('task').'/detail/task_id/'.$val['task_id'].'">'.$val['title'].'</a></td>';
 			$html.='<td><div class="progress progress-xs active">
-										<div class="progress-bar progress-bar-'.$this->progress_color[array_rand($this->progress_color,1)].' progress-bar-striped" role="progressbar" aria-valuenow="'.$val['progress'].'" aria-valuemin="0" aria-valuemax="100" style="width: '.$val['progress'].'%">
+										<div class="progress-bar progress-bar-'.$this->progress_color[array_rand($this->progress_color,1)].' progress-bar-striped" role="progressbar" aria-valuenow="'.$proportion.'" aria-valuemin="0" aria-valuemax="100" style="width: '.$proportion.'%">
 										</div>
-									</div>'.$val['progress'].'%</td>';
+									</div>'.$proportion.'%</td>';
 			$html.='<td>'.$this->User_group_model->get_user_gruop_name($val['group_id']).'</td>';
 			$html.='<td>'.$val['cate'].'</td>';
 			$html.='<td>'.date("y年n月d日 - H:s",strtotime($val['posttime'])).'</td>';
 			$html.='<td>'.date("y年n月d日 - H:s",strtotime($val['deadtime'])).'</td>';
 			$html .= '<td>
         <span class="label label-';
-			switch($val['status']){
-				case '进行中' : $html.='danger';break;
-				case '已完成' : $html.='success';break;
-				default:break;
+			if(time()-strtotime($val['deadtime']) <0){
+				$html.='danger';
+			}else{
+				$html.='success';
 			}
-			$html .= '">'.$val['status'].' </span></td>';
+			$html .= '">';
+			if(time()-strtotime($val['deadtime']) <0){
+				$html.='进行中';
+			}else{
+				$html.='已完成';
+			}
+			$html .= ' </span></td>';
 			$html.='<td><a href="'.base_url('admin/task_list_edit').'/task_id/'.$val['task_id'].'" class="btn btn-white btn-sm"><i class="fa fa-pencil"></i> 编辑 </a> ';
 			$html .= '<a href="javascript:if(confirm(\'确定要删除吗\'))window.location.href=\''.base_url('admin/task_list').'_delete/task_id/'.$val['task_id'].'\';" class="btn btn-white btn-sm"><span class="glyphicon glyphicon-edit"></span> 删除</a></td>';
 		}

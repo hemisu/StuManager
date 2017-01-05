@@ -58,17 +58,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<input type="password" class="form-control" name="password" placeholder="密码">
 				<span class="glyphicon glyphicon-lock form-control-feedback"></span>
 			</div>
+			<div class="form-group has-feedback">
+				<div id="popup-captcha"></div>
+			</div>
+
 			<input type="hidden" name="<?=$csrf['name'];?>" value="<?=$csrf['hash'];?>" />
 			<div class="row">
 				<div class="col-xs-8">
-					<div class="checkbox icheck">
+					<div class="checkbox icheck hidden">
 						<label>
 							<input type="checkbox" name="remembermyid" <?if($student_id)echo 'checked';?>> 记住我的账号
 						</label>
 					</div>
 				</div><!-- /.col -->
 				<div class="col-xs-4">
-					<button type="submit" class="btn btn-primary btn-block btn-flat">提交</button>
+					<button type="submit" id="popup-submit" class="btn btn-primary btn-block btn-flat">提交</button>
 				</div><!-- /.col -->
 			</div>
 		</form>
@@ -80,7 +84,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 		<!-- /.social-auth-links-->
 
 		<a href="<?=base_url('login/forget');?>">忘记密码?</a><br>
-
 	</div><!-- /.login-box-body -->
 </div><!-- /.login-box -->
 
@@ -101,8 +104,43 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <!-- iCheck -->
 <script src="<?php echo base_url('/public/AdminLTE2/plugins/iCheck/icheck.min.js');?>"></script>
+<!-- 引入封装了failback的接口--initGeetest -->
+<script src="http://static.geetest.com/static/tools/gt.js"></script>
 <script>
+	var SITE_URL = "<?echo SITE_BASE;?>";//SITE_URL
 	$(document).ready(function(){
+		var handlerPopup = function (captchaObj) {
+			$("#popup-submit").click(function () {
+				var validate = captchaObj.getValidate();
+				if (!validate) {
+					$.scojs_message('请完成验证', $.scojs_message.TYPE_ERROR);
+					$('#loginForm').data('bootstrapValidator').resetForm();
+				}
+			});
+			// 弹出式需要绑定触发验证码弹出按钮
+			captchaObj.bindOn("#popup-submit");
+			// 将验证码加到id为captcha的元素里
+			captchaObj.appendTo("#popup-captcha");
+			// 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
+		};
+		$.ajax({
+			// 获取id，challenge，success（是否启用failback）
+			url: SITE_URL+"api/gt/", // 加随机数防止缓存
+			type: "get",
+			dataType: "json",
+			success: function (data) {
+				// 使用initGeetest接口
+				// 参数1：配置参数
+				// 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
+				initGeetest({
+					gt: data.gt,
+					challenge: data.challenge,
+					product: "float", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
+					offline: !data.success // 表示用户后台检测极验服务器是否宕机，一般不需要关注
+				}, handlerPopup);
+			}
+		});
+
 		$('#loginForm').bootstrapValidator({
 			framework: 'bootstrap',
 			icon: {
@@ -177,6 +215,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$('#loginForm').bootstrapValidator('revalidateField', field);
 			})
 			.end();
+		$('.hidden').removeClass('hidden');//渲染后显示
+
 	});
 </script>
 </body>

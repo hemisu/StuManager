@@ -491,7 +491,7 @@ class Admin extends Admin_Controller {
 	/*
 	 * 邮件发送
 	 */
-	private function sent_email($email,$title,$content){
+	public function sent_email($email,$title,$content){
 //		$config_email_126 = $this->config->item('email_126');//载入邮件配置
 //		$config['protocol'] = 'smtp';
 //		$config['smtp_host'] = $config_email_126['smtp_host'];
@@ -513,6 +513,7 @@ class Admin extends Admin_Controller {
 		$client = new DefaultAcsClient($iClientProfile);
 		$request = new Dm\Request\V20151123\SingleSendMailRequest();
 		$request->setAccountName("hekunyu@mail.hemisu.com");
+		$request->setFromAlias("StuManager");
 		$request->setAddressType(1);
 		$request->setTagName("forget");
 		$request->setReplyToAddress("true");
@@ -526,7 +527,9 @@ class Admin extends Admin_Controller {
 //		}else{
 //			return true;
 //		}
+//		print_r($response);
 		return $response;
+
 	}
 	/*
 	 * 数据备份
@@ -593,5 +596,48 @@ class Admin extends Admin_Controller {
 			$this->showmessage('查询失败');
 		}
 		redirect(base_url('admin/database_bak'));
+	}
+	/*
+	 * 文件列表
+	 */
+	public function file_list(){
+	    //==模块加载==
+		$this->load->model(array('Upload_file_model'));
+		
+		include_once BASEPATH.'sdk/Qiniu/autoload.php';
+
+		$qiniuAccess = $this->config->item('qiniuAccess');
+		$accessKey = $qiniuAccess['accessKey'];
+		$secretKey = $qiniuAccess['secretKey'];
+
+		//初始化Auth状态
+		$auth = new Qiniu\Auth($accessKey, $secretKey);
+
+		//初始化BucketManager
+		$bucketMgr = new Qiniu\Storage\BucketManager($auth);
+
+		// 要列取的空间名称
+		$bucket = 'stumanager';
+
+		// 要列取文件的公共前缀
+		$prefix = '';
+
+		$marker = '';
+		$limit = 100;
+
+		list($iterms, $marker, $err) = $bucketMgr->listFiles($bucket, $prefix, $marker, $limit);
+// 		if ($err !== null) {
+// 			echo "\n====> list file err: \n<pre>";
+// 			print_r($err);
+// 		} else {
+// 			echo "Marker: $marker\n";
+// 			echo "\nList Iterms====>\n<pre>";
+// 			print_r($iterms);
+// 		}
+		$this->page_data['filelist']=$iterms;
+		$this->page_data['filelist'] = $this->Upload_file_model->html_admin_file_list();
+		$this->load->view('head',$this->page_data);
+		$this->load->view('siderbar',$this->page_data);
+		$this->load->view('admin/admin_file_list',$this->page_data);
 	}
 }

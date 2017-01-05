@@ -25,12 +25,18 @@
 						<dl class="dl-horizontal">
 							<dt>状态：</dt>
 							<dd><span class="label label-<?
-								switch($taskinfo['status']){
-									case '进行中' : echo 'danger';break;
-									case '已完成' : echo 'success';break;
-									default:break;
+								if(time()-strtotime($taskinfo['deadtime']) <0){
+									echo 'danger';
+								}else{
+									echo 'success';
 								}
-							?>"><?=$taskinfo['status']?></span>
+							?>"><?
+									if(time()-strtotime($taskinfo['deadtime']) <0){
+										echo '进行中';
+									}else{
+										echo '已完成';
+									}
+									?></span>
 							</dd>
 						</dl>
 					</div>
@@ -55,13 +61,14 @@
 				</div>
 				<div class="row">
 					<div class="col-sm-12">
+						<?$proportion = $this->Task_title_model->progress_time($taskinfo);?>
 						<dl class="dl-horizontal">
 							<dt>当前进度</dt>
 							<dd>
 								<div class="progress progress-striped active m-b-sm">
-									<div style="width: <?=$taskinfo['progress']?>%;" class="progress-bar"></div>
+									<div style="width: <?=$proportion?>%;" class="progress-bar"></div>
 								</div>
-								<small>当前已完成总进度的 <strong><?=$taskinfo['progress']?>%</strong></small>
+								<small>当前已完成总进度的 <strong><?=$proportion?>%</strong></small>
 							</dd>
 						</dl>
 						<strong><h3>介绍:</h3></strong>
@@ -72,7 +79,15 @@
 					<div class="col-sm-12">
 						<p><?=$taskinfo['description'];?></p>
 						<hr />
-						<a href="<?=base_url('task').'/'.$taskinfo['cate'].'/task_id/'.$taskinfo['task_id'];?>" class="btn btn-info btn-block">点击进入填写页面</a>
+						<?
+						if(strtotime($taskinfo['deadtime'])-time()>0) {//未过截止日期
+							?>
+							<a href="<?= base_url('task') . '/' . $taskinfo['cate'] . '/task_id/' . $taskinfo['task_id']; ?>"
+							   class="btn btn-info btn-block">点击进入填写页面</a>
+						<?}else{?>
+							<a href="<?= base_url('task') . '/' . $taskinfo['cate'] . '/task_id/' . $taskinfo['task_id']; ?>"
+							   class="btn btn-danger btn-block">已过截止日期，点击查看内容</a>
+						<?}?>
 					</div>
 				</div>
 
@@ -84,8 +99,8 @@
 									<ul class="nav nav-tabs">
 										<li class="active"><a href="#tab-1" data-toggle="tab">提交列表</a>
 										</li>
-										<li class=""><a href="#tab-2" data-toggle="tab">阶段</a>
-										</li>
+<!--										<li class=""><a href="#tab-2" data-toggle="tab">阶段</a>-->
+<!--										</li>-->
 									</ul>
 								</div>
 							</div>
@@ -97,85 +112,85 @@
 											<?=$actionlist;?>
 										</div>
 									</div>
-									<div class="tab-pane" id="tab-2">
-										<div class="table-responsive">
-											<table class="table table-striped">
-											<thead>
-											<tr>
-												<th>状态</th>
-												<th>标题</th>
-												<th>开始时间</th>
-												<th>结束时间</th>
-												<th>说明</th>
-											</tr>
-											</thead>
-											<tbody>
-											<tr>
-												<td>
-													<span class="label label-primary"><i class="fa fa-check"></i> 已完成</span>
-												</td>
-												<td>
-													文档在线预览功能
-												</td>
-												<td>
-													11月7日 22:03
-												</td>
-												<td>
-													11月7日 20:11
-												</td>
-												<td>
-													<p class="small">
-														已经测试通过
-													</p>
-												</td>
-
-											</tr>
-											<tr>
-												<td>
-													<span class="label label-primary"><i class="fa fa-check"></i> 解决中</span>
-												</td>
-												<td>
-													会员登录
-												</td>
-												<td>
-													11月7日 22:03
-												</td>
-												<td>
-													11月7日 20:11
-												</td>
-												<td>
-													<p class="small">
-														测试中
-													</p>
-												</td>
-
-											</tr>
-											<tr>
-												<td>
-													<span class="label label-primary"><i class="fa fa-check"></i> 解决中</span>
-												</td>
-												<td>
-													会员积分
-												</td>
-												<td>
-													11月7日 22:03
-												</td>
-												<td>
-													11月7日 20:11
-												</td>
-												<td>
-													<p class="small">
-														未测试
-													</p>
-												</td>
-
-											</tr>
-
-
-											</tbody>
-										</table>
-									</div>
-									</div>
+<!--									<div class="tab-pane" id="tab-2">-->
+<!--										<div class="table-responsive">-->
+<!--											<table class="table table-striped">-->
+<!--											<thead>-->
+<!--											<tr>-->
+<!--												<th>状态</th>-->
+<!--												<th>标题</th>-->
+<!--												<th>开始时间</th>-->
+<!--												<th>结束时间</th>-->
+<!--												<th>说明</th>-->
+<!--											</tr>-->
+<!--											</thead>-->
+<!--											<tbody>-->
+<!--											<tr>-->
+<!--												<td>-->
+<!--													<span class="label label-primary"><i class="fa fa-check"></i> 已完成</span>-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													文档在线预览功能-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													11月7日 22:03-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													11月7日 20:11-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													<p class="small">-->
+<!--														已经测试通过-->
+<!--													</p>-->
+<!--												</td>-->
+<!---->
+<!--											</tr>-->
+<!--											<tr>-->
+<!--												<td>-->
+<!--													<span class="label label-primary"><i class="fa fa-check"></i> 解决中</span>-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													会员登录-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													11月7日 22:03-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													11月7日 20:11-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													<p class="small">-->
+<!--														测试中-->
+<!--													</p>-->
+<!--												</td>-->
+<!---->
+<!--											</tr>-->
+<!--											<tr>-->
+<!--												<td>-->
+<!--													<span class="label label-primary"><i class="fa fa-check"></i> 解决中</span>-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													会员积分-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													11月7日 22:03-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													11月7日 20:11-->
+<!--												</td>-->
+<!--												<td>-->
+<!--													<p class="small">-->
+<!--														未测试-->
+<!--													</p>-->
+<!--												</td>-->
+<!---->
+<!--											</tr>-->
+<!---->
+<!---->
+<!--											</tbody>-->
+<!--										</table>-->
+<!--									</div>-->
+<!--									</div>-->
 								</div>
 							</div>
 						</div>

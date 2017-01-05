@@ -61,7 +61,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 			<input type="hidden" name="<?=$csrf['name'];?>" value="<?=$csrf['hash'];?>" />
 			<div class="row">
 				<div class="col-xs-8">
-					<div class="checkbox icheck">
+					<div class="checkbox icheck hidden">
 						<label>
 							<!-- A trigger modal -->
 							<input type="checkbox" name="acceptTerms" id="acceptTerms">
@@ -222,6 +222,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				$('#bindingForm').bootstrapValidator('revalidateField', field);
 			})
 			.end();
+		.on('.hidden').removeClass('hidden');//渲染后显示
 	});
 </script>
 

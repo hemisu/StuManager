@@ -75,6 +75,9 @@
 				</div>
 				<div class="row m-t-sm">
 					<div class="col-sm-12">
+						<?
+						if(strtotime($taskinfo['deadtime'])-time()>0) {//未过截止日期
+						?>
 						<form id="infoForm" method="post" action="<?=current_url();?>" class="form-horizontal">
 							<?//跨站请求伪造
 							$csrf = array(
@@ -172,6 +175,7 @@
 								</div>
 							</div>
 						</form>
+						<?}?>
 					</div>
 				</div>
 				</div>

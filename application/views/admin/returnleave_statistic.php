@@ -16,9 +16,9 @@
 		<div class="col-md-12">
 			<div class="box">
 				<div class="box-header">
-					<h3 class="box-title">公告列表</h3>
+					<h3 class="box-title">统计列表</h3>
 					<div class="box-tools pull-right">
-						<a href="<?echo base_url('admin/announce_add')?>" class="btn btn-primary btn-sm">发布新公告</a>
+						<a href="<?echo base_url('admin/announce_add')?>" class="btn btn-primary btn-sm">发布新事项</a>
 					</div>
 				</div><!-- /.box-header -->
 				<div class="box-body">

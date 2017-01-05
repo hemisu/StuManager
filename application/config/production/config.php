@@ -439,6 +439,8 @@ $config['csrf_exclude_uris'] = array(
 	'task/user_username_json',
 	'file/avatar_upload/[0-9]+',//file
 	'circle/index',
+	'api/.*?',
+	'wangbin/post' //王斌老师的额外程序
 );
 
 /*

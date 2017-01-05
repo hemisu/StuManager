@@ -38,7 +38,7 @@ class User_action_log extends Base_Model {
 									<small class="pull-right">'.$num--.'#</small>
 									<strong>'.$u['username'].'</strong> 提交了 <strong>'.$t['title'].'</strong> .
 									<br>
-									<small class="text-muted"><time class="timeago" datetime="'.date('c',$v['datetime']).'"></time> 来自 '.$this->input->user_agent().'</small>
+									<small class="text-muted"><time class="timeago" datetime="'.date('c',$v['datetime']).'"></time></small>
 									<br><p>'.$v['description'].'</p>';
 			if(!empty($v['content'])){$html .='<div class="well">'.$v['content'].'</div>';}
 			$html .='</div>

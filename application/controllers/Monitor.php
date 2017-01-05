@@ -21,7 +21,7 @@ class Monitor extends Login_Controller {
 	 */
 	public function user_library_json(){
 		if(!$this->input->is_ajax_request())exit('access allowed!');
-		$userinfo = $this->User_model->select(array('classes'=>$this->page_data['userinfo']['classes']),'`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`,`group_id`,`lastLoginTime`');
+		$userinfo = $this->User_model->select(array('classes'=>$this->page_data['userinfo']['classes']),'`username`,`student_id`,`email`,`qq`,`classes`,`long_phone`,`short_phone`,`card_id`,`zzmm`,`mz`,`jg`,`qinshi`,`address`,`group_id`,`lastLoginTime`,`atschool`');
 		foreach($userinfo as $v){
 			$v['group_name']=$this->User_group_model->get_user_gruop_name($v['group_id']);
 			$userinfos[]=$v;

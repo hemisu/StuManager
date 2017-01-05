@@ -15,7 +15,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<link href="<?php echo base_url('/favicon.png');?>" rel="icon" type="image/x-icon" />
-	<title><?echo $pageheaderinfo[0][0];?> - 学生管理系统 Stumanager</title>
+	<title><?echo $pageheaderinfo[0][0];?> - <?=$this->siteinfo['sitename']?></title>
 	<!-- Tell the browser to be responsive to screen width -->
 	<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 	<!-- Bootstrap 3.3.5 -->
@@ -40,6 +40,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/bootstrap-slider/slider.css');?>">
 	<!-- jvectormap -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/jvectormap/jquery-jvectormap-1.2.2.css');?>">
+	<!-- fancyBox -->
+	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/fancyBox/jquery.fancybox.css');?>">
 	<!-- bootstrap wysihtml5 - text editor -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2');?>/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
 	<!-- bootstrap datetimepicker -->
@@ -56,6 +58,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<![endif]-->
 	<!-- 调试 -->
 	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/stu.css');?>">
+	<!-- uploader.css -->
+	<link rel="stylesheet" href="<?php echo base_url('/public/AdminLTE2/plugins/uploader/uploader.css');?>">
 	<style>
 	</style>
 </head>

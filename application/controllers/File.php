@@ -6,14 +6,102 @@ class File extends Login_Controller{
 	function __construct()
 	{
 		parent::__construct();
+		//==模块加载==
+		$this->load->model(array('Upload_file_model'));
 		$this->method_config['upload_avatar'] = array(
 			'upload_size'=>1024,'upload_file_type'=>'jpg|png|gif','upload_path'=>'public/avatar','upload_url'=>base_url().'public/avatar/'
 		);
 	}
 	public function index(){
+		$where_arr = array();
+		$type = $student_id = "";
+
+		if (isset($_GET['type'])) {
+			$type =isset($_GET['type'])?safe_replace(trim($_GET['type'])):'';
+			if($type!="") $where_arr[] = "`mime_type` like '%{$type}%'";
+		}
+		if (isset($_GET['student_id'])) {
+			$student_id =isset($_GET['student_id'])?safe_replace(trim($_GET['student_id'])):'';
+			if($student_id!="") $where_arr[] = "`student_id` = '$student_id'";
+		}
+		$where = implode(" and ",$where_arr);
+
+		$sqlresult = $this->Upload_file_model->select($where);
+		$this->page_data['filelist'] = $this->Upload_file_model->html_public_file_list($sqlresult);
 		$this->load->view('head',$this->page_data);
 		$this->load->view('siderbar',$this->page_data);
 		$this->load->view('public/file_manager',$this->page_data);
+	}
+	public function test(){
+		echo json_encode(array('status' => 'ok'));
+	}
+	public function delete_file($key){
+		if(empty($key))exit('?');
+		$r = $this->Upload_file_model->get_one(array('student_id'=>$this->student_id,'key_orignal'=>$key));
+		if(!$r || $this->group_id != SUPERADMIN_GROUP_ID){
+			$this->showmessage('不是你的文件，不能进行操作');
+			return 0;
+		}
+
+		include_once BASEPATH.'sdk/Qiniu/autoload.php';
+
+		$qiniuAccess = $this->config->item('qiniuAccess');
+		$accessKey = $qiniuAccess['accessKey'];
+		$secretKey = $qiniuAccess['secretKey'];
+
+		//初始化Auth状态
+		$auth = new Qiniu\Auth($accessKey, $secretKey);
+
+		//初始化BucketManager
+		$bucketMgr = new Qiniu\Storage\BucketManager($auth);
+
+		// 要列取的空间名称
+		$bucket = 'stumanager';
+
+		//删除$bucket 中的文件 $key
+		$err = $bucketMgr->delete($bucket, $key);
+		if ($err !== null) {
+			var_dump($err);//输出错误信息
+		} else {
+			$this->Upload_file_model->delete(array('key_orignal'=>$key));
+			if(isset($_SERVER['HTTP_REFERER'])){
+				redirect($_SERVER['HTTP_REFERER']);
+			}
+		}
+	}
+	public function list_file(){
+		include_once BASEPATH.'sdk/Qiniu/autoload.php';
+
+		$qiniuAccess = $this->config->item('qiniuAccess');
+		$accessKey = $qiniuAccess['accessKey'];
+		$secretKey = $qiniuAccess['secretKey'];
+
+		//初始化Auth状态
+		$auth = new Qiniu\Auth($accessKey, $secretKey);
+
+		//初始化BucketManager
+		$bucketMgr = new Qiniu\Storage\BucketManager($auth);
+
+		// 要列取的空间名称
+		$bucket = 'stumanager';
+
+		// 要列取文件的公共前缀
+		$prefix = '';
+
+		$marker = '';
+		$limit = 3;
+
+		list($iterms, $marker, $err) = $bucketMgr->listFiles($bucket, $prefix, $marker, $limit);
+		if ($err !== null) {
+			echo "\n====> list file err: \n";
+			var_dump($err);
+		} else {
+			echo "Marker: $marker\n";
+			echo "\nList Iterms====>\n";
+			var_dump($iterms);
+		}
+
+
 	}
 	/**
 	 * 上传附件
@@ -66,4 +154,12 @@ class File extends Login_Controller{
 			die('缺少上传参数');
 		}
 	}
+	/*
+	 * Qiniu token生成
+	 */
+	public function Qiniutoken(){
+
+	}
+
+
 }

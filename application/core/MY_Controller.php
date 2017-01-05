@@ -11,10 +11,11 @@ class MY_Controller extends CI_Controller
 	function __construct(){
 		parent::__construct();
 		$this->config->load('stu');
-		$this->stu_status = $this->config->item('stu_status');
-		$this->stu_task = $this->config->item('stu_task');
-		$this->progress_color = $this->config->item('progress_color');
-
+		$this->stu_status = $this->config->item('stu_status');//系统状态
+		$this->siteinfo = $this->config->item('siteinfo');//站点信息
+		$this->stu_task = $this->config->item('stu_task');//事项模板
+		$this->progress_color = $this->config->item('progress_color');//颜色
+		$this->qiniubaseurl = $this->config->item('qiniubaseurl');//七牛云
 	}
 
 }

@@ -44,6 +44,13 @@ class User_model extends Base_Model {
 		$classesarr=$this->select('','`classes`','','','classes');
 		return $classesarr;
 	}
+	/*
+	 * 根据ID返回姓名、班级
+	 */
+	function username_classes($student_id){
+		$username=$this->get_one(array('student_id'=>$student_id),'`username`,`classes`');
+		return $username;
+	}
 
 	
 }

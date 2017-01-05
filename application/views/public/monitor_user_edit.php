@@ -18,7 +18,7 @@
 			<div class="box-header">
 				<h3 class="box-title">添加用户</h3>
 				<div class="box-tools pull-right">
-					<a href="<?echo base_url('admin/user_library')?>" class="btn btn-default btn-sm">返回</a>
+					<a href="<?echo base_url('monitor/')?>" class="btn btn-default btn-sm">返回</a>
 				</div>
 			</div><!-- /.box-header -->
 			<div class="box-body">
